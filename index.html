@@ -3,399 +3,106 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Desk Buddy &mdash; Schematics</title>
-<style>
-  * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    color: #1f2430; font-size: 14px; line-height: 1.5; background: #f4f5fa;
-  }
-  .page { max-width: 1100px; margin: 0 auto; padding: 28px 32px; }
-  h1 { font-size: 26px; margin: 0 0 2px; }
-  .sub { color: #6b7280; font-size: 12.5px; }
-  h2 { font-size: 17px; margin: 34px 0 8px; padding-bottom: 5px; border-bottom: 2px solid #4f46e5; }
-  h2 .badge { font-size: 11px; vertical-align: middle; }
-  table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-  th, td { text-align: left; padding: 7px 9px; border: 1px solid #e2e6ee; vertical-align: top; }
-  th { background: #eef0ff; font-size: 11.5px; text-transform: uppercase; letter-spacing: .03em; }
-  td.c, th.c { text-align: center; }
-  .chip { display: inline-block; border-radius: 6px; padding: 2px 8px; font-size: 12px;
-          font-weight: 600; color: #fff; white-space: nowrap;
-          font-family: ui-monospace, Consolas, monospace; }
-  .chip.g { background: #16a34a; } .chip.b { background: #2563eb; } .chip.r { background: #dc2626; }
-  .chip.k { background: #374151; } .chip.m { background: #db2777; } .chip.p { background: #7c3aed; }
-  .chip.o { background: #ea580c; } .chip.c { background: #0891b2; } .chip.y { background: #ca8a04; }
-  .badge { display: inline-block; border-radius: 999px; padding: 3px 11px; font-size: 11px;
-           font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #fff; }
-  .badge.dev { background: #4f46e5; }
-  .badge.mini { background: #0891b2; }
-  .note { background: #eef0ff; border-left: 4px solid #4f46e5; padding: 9px 13px; border-radius: 6px; margin: 12px 0; }
-  .warn { background: #fff7ed; border-left-color: #ea580c; }
-  .ok { background: #ecfdf5; border-left-color: #16a34a; }
-  .danger { background: #fef2f2; border-left-color: #dc2626; }
-  code { background: #f3f4f6; border-radius: 4px; padding: 1px 5px; font-size: 12.5px;
-         font-family: ui-monospace, Consolas, monospace; }
-  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; margin: 8px 0 4px; }
-  .legend span { display: inline-flex; align-items: center; gap: 5px; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 820px) { .grid2 { grid-template-columns: 1fr; } }
-  svg { max-width: 100%; height: auto; }
-  .panel { border: 1px solid #e2e6ee; border-radius: 10px; background: #fff; padding: 12px 14px; }
-  @media print {
-    body { background: #fff; }
-    .page { max-width: none; padding: 10px; }
-    h2 { break-after: avoid; }
-    .panel { break-inside: avoid; }
-  }
-</style>
+<title>Desk Buddy &mdash; ESP32 Connection Schematics</title>
+<link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 <div class="page">
 
-  <h1>Desk Buddy &mdash; Connection Schematics</h1>
-  <p class="sub">Two builds: <b>normal ESP32 DevKit</b> &middot; <b>ESP32 Mini (C3 / small dev board)</b>
-     &mdash; powered by USB 5&nbsp;V, everything else 3V3</p>
+  <div class="nav">
+    <a href="index.html" class="active">Overview</a>
+    <a href="component-oled.html">OLED</a>
+    <a href="component-tof.html">ToF</a>
+    <a href="component-mic.html">Mic</a>
+    <a href="component-touch.html">Touch</a>
+    <a href="component-amp.html">Amp</a>
+    <a href="component-motor.html">Motor</a>
+  </div>
+
+  <h1>Desk Buddy &mdash; ESP32 Connection Schematics</h1>
+  <p class="sub">Every module, one page each &mdash; pin locations, wire colours and diagrams for both the
+     normal ESP32 DevKit and the ESP32 Mini / C3 &middot; powered by USB 5&nbsp;V</p>
 
   <div class="note danger">
-    <b>Read this first.</b> Build one module at a time and test before adding the next.
-    Never put 5&nbsp;V into a 3V3 pin. Sensor + OLED + touch run on 3V3; only the audio amp
-    and the motor supply may use 5&nbsp;V.
+    <b>Read this first.</b> Build <b>one module at a time</b> and test before adding the next.
+    Never put 5&nbsp;V into a 3V3 pin &mdash; the amplifier is the only module on 5&nbsp;V; everything
+    else is 3.3&nbsp;V. All modules share one common ground.
   </div>
 
-  <div class="legend">
-    <span><span class="chip r">RED</span> 3V3 power</span>
-    <span><span class="chip k">BLACK</span> GND</span>
-    <span><span class="chip g">GREEN</span> SDA / I2C data</span>
-    <span><span class="chip b">BLUE</span> SCL / I2C clock</span>
-    <span><span class="chip p">PURPLE</span> mic out</span>
-    <span><span class="chip o">ORANGE</span> touch out</span>
-    <span><span class="chip c">CYAN</span> audio</span>
-    <span><span class="chip y">YELLOW</span> motor PWM</span>
+  <h2>1. Components</h2>
+  <div class="cards">
+
+    <a class="card" href="component-oled.html">
+      <div class="ttl"><span class="k" style="background:#16a34a"></span>SSD1306 OLED</div>
+      <div class="desc">0.96&quot; I2C display behind the 28&times;18 mm panel window. 4 wires.</div>
+      <div class="pins">
+        <span class="chip r">3V3</span><span class="chip k">GND</span>
+        <span class="chip g">SDA 21</span><span class="chip b">SCL 22</span>
+      </div>
+    </a>
+
+    <a class="card" href="component-tof.html">
+      <div class="ttl"><span class="k" style="background:#7c3aed"></span>VL53L0X ToF</div>
+      <div class="desc">Time-of-flight distance sensor behind the 14&times;10 mm window. Shares I2C.</div>
+      <div class="pins">
+        <span class="chip r">3V3</span><span class="chip k">GND</span>
+        <span class="chip g">SDA 21</span><span class="chip b">SCL 22</span>
+      </div>
+    </a>
+
+    <a class="card" href="component-mic.html">
+      <div class="ttl"><span class="k" style="background:#db2777"></span>MAX4466 mic</div>
+      <div class="desc">Analog mic amplifier &mdash; hears claps and voice. 3 wires.</div>
+      <div class="pins">
+        <span class="chip r">3V3</span><span class="chip k">GND</span><span class="chip p">OUT 35</span>
+      </div>
+    </a>
+
+    <a class="card" href="component-touch.html">
+      <div class="ttl"><span class="k" style="background:#ea580c"></span>TTP223 touch</div>
+      <div class="desc">Capacitive touch pad &mdash; stroke the top to pet it. 3 wires.</div>
+      <div class="pins">
+        <span class="chip r">3V3</span><span class="chip k">GND</span><span class="chip o">OUT 32</span>
+      </div>
+    </a>
+
+    <a class="card" href="component-amp.html">
+      <div class="ttl"><span class="k" style="background:#0891b2"></span>HXJ8002 amp + speaker</div>
+      <div class="desc">The pet's voice. <b>Only module on 5 V.</b> DAC vs PWM differs per board.</div>
+      <div class="pins">
+        <span class="chip r">5V</span><span class="chip k">GND</span><span class="chip c">L 25</span>
+      </div>
+    </a>
+
+    <a class="card" href="component-motor.html">
+      <div class="ttl"><span class="k" style="background:#ca8a04"></span>Motor + BC337</div>
+      <div class="desc">Nodding / bobbing. Needs a transistor + 1 k&Omega; base resistor.</div>
+      <div class="pins">
+        <span class="chip r">3V3</span><span class="chip k">GND</span><span class="chip y">PWM 27</span>
+      </div>
+    </a>
+
   </div>
 
-  <!-- ============================================================ DEV BOARD -->
-  <h2><span class="badge dev">Board 1</span> Normal ESP32 DevKit (30 / 38-pin, e.g. ESP-WROOM-32)</h2>
-
-  <p>Use this build if you have the classic wide DevKit board with two rows of header pins and a
-     micro-USB / USB-B socket. It has both DAC (GPIO25) and the classic I/O set, so the audio
-     wiring below works as-is.</p>
-
+  <h2>2. Master pin map</h2>
   <table>
-    <tr><th>Module</th><th>Module pin</th><th class="c">Goes to</th><th class="c">DevKit pin label</th><th>Notes</th></tr>
-    <tr><td>SSD1306 OLED</td><td>VCC</td><td class="c"><span class="chip r">3V3</span></td><td class="c">3V3</td><td>0.96&quot; I2C display</td></tr>
-    <tr><td>SSD1306 OLED</td><td>GND</td><td class="c"><span class="chip k">GND</span></td><td class="c">GND</td><td></td></tr>
-    <tr><td>SSD1306 OLED</td><td>SDA</td><td class="c"><span class="chip g">SDA</span></td><td class="c">GPIO21</td><td>shared I2C bus</td></tr>
-    <tr><td>SSD1306 OLED</td><td>SCL</td><td class="c"><span class="chip b">SCL</span></td><td class="c">GPIO22</td><td>shared I2C bus</td></tr>
-    <tr><td>VL53L0X ToF</td><td>VCC</td><td class="c"><span class="chip r">3V3</span></td><td class="c">3V3</td><td>distance sensor</td></tr>
-    <tr><td>VL53L0X ToF</td><td>GND</td><td class="c"><span class="chip k">GND</span></td><td class="c">GND</td><td></td></tr>
-    <tr><td>VL53L0X ToF</td><td>SDA</td><td class="c"><span class="chip g">SDA</span></td><td class="c">GPIO21</td><td>same bus as OLED</td></tr>
-    <tr><td>VL53L0X ToF</td><td>SCL</td><td class="c"><span class="chip b">SCL</span></td><td class="c">GPIO22</td><td>same bus as OLED</td></tr>
-    <tr><td>MAX4466 mic</td><td>VCC</td><td class="c"><span class="chip r">3V3</span></td><td class="c">3V3</td><td>clap / voice detect</td></tr>
-    <tr><td>MAX4466 mic</td><td>GND</td><td class="c"><span class="chip k">GND</span></td><td class="c">GND</td><td></td></tr>
-    <tr><td>MAX4466 mic</td><td>OUT</td><td class="c"><span class="chip p">OUT</span></td><td class="c">GPIO35</td><td>input-only pin, correct</td></tr>
-    <tr><td>TTP223 touch</td><td>VCC</td><td class="c"><span class="chip r">3V3</span></td><td class="c">3V3</td><td>tap / pet</td></tr>
-    <tr><td>TTP223 touch</td><td>GND</td><td class="c"><span class="chip k">GND</span></td><td class="c">GND</td><td></td></tr>
-    <tr><td>TTP223 touch</td><td>OUT (SIG)</td><td class="c"><span class="chip o">OUT</span></td><td class="c">GPIO32</td><td></td></tr>
-    <tr><td>HXJ8002 amp</td><td>5V</td><td class="c"><span class="chip r">5V</span></td><td class="c">5V / VIN</td><td><b>only</b> module on 5V</td></tr>
-    <tr><td>HXJ8002 amp</td><td>GND</td><td class="c"><span class="chip k">GND</span></td><td class="c">GND</td><td>common ground</td></tr>
-    <tr><td>HXJ8002 amp</td><td>L (audio in)</td><td class="c"><span class="chip c">DAC</span></td><td class="c">GPIO25</td><td>real DAC output</td></tr>
-    <tr><td>HXJ8002 amp</td><td>V2 (+)</td><td class="c"><span class="chip c">SPK</span></td><td class="c">40mm 8&Omega; +</td><td>speaker positive</td></tr>
-    <tr><td>HXJ8002 amp</td><td>V1 (&minus;)</td><td class="c"><span class="chip k">GND</span></td><td class="c">GND</td><td>speaker negative</td></tr>
-    <tr><td>BC337 driver</td><td>base</td><td class="c"><span class="chip y">1k&Omega;</span></td><td class="c">GPIO27</td><td>1&nbsp;k&Omega; in series</td></tr>
-    <tr><td>Motor</td><td>+</td><td class="c"><span class="chip r">3V3</span></td><td class="c">3V3</td><td>motor power</td></tr>
-    <tr><td>Motor</td><td>&minus;</td><td class="c"><span class="chip k">GND</span></td><td class="c">GND</td><td></td></tr>
+    <tr><th>Module</th><th class="c">VCC</th><th class="c">GND</th><th class="c">Normal DevKit</th><th class="c">ESP32 Mini / C3</th></tr>
+    <tr><td>SSD1306 OLED</td><td class="c"><span class="chip r">3V3</span></td><td class="c"><span class="chip k">GND</span></td><td class="c">21 / 22</td><td class="c">8 / 9</td></tr>
+    <tr><td>VL53L0X ToF</td><td class="c"><span class="chip r">3V3</span></td><td class="c"><span class="chip k">GND</span></td><td class="c">21 / 22</td><td class="c">8 / 9</td></tr>
+    <tr><td>MAX4466 mic</td><td class="c"><span class="chip r">3V3</span></td><td class="c"><span class="chip k">GND</span></td><td class="c">GPIO35</td><td class="c">GPIO2</td></tr>
+    <tr><td>TTP223 touch</td><td class="c"><span class="chip r">3V3</span></td><td class="c"><span class="chip k">GND</span></td><td class="c">GPIO32</td><td class="c">GPIO3</td></tr>
+    <tr><td>HXJ8002 amp</td><td class="c"><span class="chip r">5V</span></td><td class="c"><span class="chip k">GND</span></td><td class="c">GPIO25 <span style="color:#16a34a">(DAC)</span></td><td class="c">GPIO6 <span style="color:#ea580c">(PWM)</span></td></tr>
+    <tr><td>Motor + BC337</td><td class="c"><span class="chip r">3V3</span></td><td class="c"><span class="chip k">GND</span></td><td class="c">GPIO27</td><td class="c">GPIO7</td></tr>
   </table>
 
-  <div class="panel">
-    <h3 style="margin:0 0 6px;font-size:14px;">Diagram &mdash; DevKit</h3>
-    <svg viewBox="0 0 1020 470" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <style>
-          .t { font: 12px ui-monospace, Consolas, monospace; }
-          .tb { font: 600 13px ui-monospace, Consolas, monospace; }
-          .h { font: 600 14px -apple-system, Segoe UI, sans-serif; }
-          .wire { stroke-width: 2; fill: none; }
-        </style>
-      </defs>
-
-      <!-- ESP32 block -->
-      <rect x="360" y="60" width="300" height="350" rx="12" fill="#1f2430"/>
-      <text x="510" y="86" class="h" fill="#fff" text-anchor="middle">ESP32 DevKit</text>
-      <text x="510" y="104" class="t" fill="#9aa3b2" text-anchor="middle">USB 5V in</text>
-
-      <!-- left pins -->
-      <g class="t" fill="#e6e9f2">
-        <text x="376" y="140">3V3</text>
-        <text x="376" y="172">GPIO21</text>
-        <text x="376" y="204">GPIO22</text>
-        <text x="376" y="252">GPIO32</text>
-        <text x="376" y="300">GPIO25 (DAC)</text>
-        <text x="376" y="348">GPIO27</text>
-        <text x="376" y="384">GND</text>
-      </g>
-      <!-- right pins -->
-      <g class="t" fill="#e6e9f2">
-        <text x="600" y="140">GPIO35 (in)</text>
-        <text x="600" y="230">3V3</text>
-        <text x="600" y="290">5V</text>
-        <text x="600" y="384">GND</text>
-      </g>
-      <circle cx="352" cy="136" r="4" fill="#dc2626"/>
-      <circle cx="352" cy="168" r="4" fill="#16a34a"/>
-      <circle cx="352" cy="200" r="4" fill="#2563eb"/>
-      <circle cx="352" cy="248" r="4" fill="#ea580c"/>
-      <circle cx="352" cy="296" r="4" fill="#0891b2"/>
-      <circle cx="352" cy="344" r="4" fill="#ca8a04"/>
-      <circle cx="352" cy="380" r="4" fill="#374151"/>
-      <circle cx="668" cy="136" r="4" fill="#7c3aed"/>
-      <circle cx="668" cy="226" r="4" fill="#dc2626"/>
-      <circle cx="668" cy="286" r="4" fill="#dc2626"/>
-      <circle cx="668" cy="380" r="4" fill="#374151"/>
-
-      <!-- OLED -->
-      <rect x="60" y="130" width="230" height="86" rx="10" fill="#ecfdf5" stroke="#16a34a"/>
-      <text x="76" y="152" class="h" fill="#065f46">SSD1306 OLED</text>
-      <text x="76" y="172" class="t" fill="#047857">VCC  SDA  SCL  GND</text>
-      <text x="76" y="192" class="t" fill="#059669">28 x 18 window</text>
-      <text x="76" y="208" class="t" fill="#059669">0.96&quot; I2C</text>
-
-      <!-- ToF -->
-      <rect x="60" y="238" width="230" height="76" rx="10" fill="#f5f3ff" stroke="#7c3aed"/>
-      <text x="76" y="260" class="h" fill="#5b21b6">VL53L0X ToF</text>
-      <text x="76" y="280" class="t" fill="#6d28d9">VCC SDA SCL GND</text>
-      <text x="76" y="298" class="t" fill="#7c3aed">14 x 10 window</text>
-
-      <!-- MIC -->
-      <rect x="740" y="98" width="220" height="76" rx="10" fill="#fdf2f8" stroke="#db2777"/>
-      <text x="756" y="120" class="h" fill="#9d174d">MAX4466 mic</text>
-      <text x="756" y="140" class="t" fill="#be185d">VCC  GND  OUT</text>
-      <text x="756" y="158" class="t" fill="#db2777">clap / voice</text>
-
-      <!-- TOUCH -->
-      <rect x="740" y="200" width="220" height="76" rx="10" fill="#fff7ed" stroke="#ea580c"/>
-      <text x="756" y="222" class="h" fill="#9a3412">TTP223 touch</text>
-      <text x="756" y="242" class="t" fill="#c2410c">VCC  GND  OUT</text>
-      <text x="756" y="260" class="t" fill="#ea580c">tap / pet</text>
-
-      <!-- AMP -->
-      <rect x="740" y="330" width="220" height="80" rx="10" fill="#ecfeff" stroke="#0891b2"/>
-      <text x="756" y="352" class="h" fill="#155e75">HXJ8002 amp</text>
-      <text x="756" y="372" class="t" fill="#0e7490">5V  L  GND  V1/V2</text>
-      <text x="756" y="390" class="t" fill="#0891b2">40mm 8&Omega; speaker</text>
-
-      <!-- MOTOR -->
-      <rect x="60" y="330" width="230" height="80" rx="10" fill="#fefce8" stroke="#ca8a04"/>
-      <text x="76" y="352" class="h" fill="#854d0e">Motor + BC337</text>
-      <text x="76" y="372" class="t" fill="#a16207">GPIO27 &#8594; 1k&#937; &#8594; base</text>
-      <text x="76" y="390" class="t" fill="#ca8a04">3V3 &#8594; motor +</text>
-
-      <!-- wires OLED -->
-      <path class="wire" stroke="#dc2626" d="M352 136 H320 V140 H290"/>
-      <path class="wire" stroke="#16a34a" d="M352 168 H320 V158 H290"/>
-      <path class="wire" stroke="#2563eb" d="M352 200 H320 V176 H290"/>
-      <path class="wire" stroke="#374151" d="M352 380 H320 V216 H290"/>
-      <!-- wires ToF -->
-      <path class="wire" stroke="#dc2626" d="M352 136 H310 V252 H290"/>
-      <path class="wire" stroke="#16a34a" d="M352 168 H305 V266 H290"/>
-      <path class="wire" stroke="#2563eb" d="M352 200 H300 V284 H290"/>
-      <path class="wire" stroke="#374151" d="M352 380 H295 V302 H290"/>
-      <!-- mic -->
-      <path class="wire" stroke="#7c3aed" d="M668 136 H700 V136 H740"/>
-      <path class="wire" stroke="#dc2626" d="M668 226 H690 V158 H740"/>
-      <path class="wire" stroke="#374151" d="M668 380 H690 V170 H740"/>
-      <!-- touch -->
-      <path class="wire" stroke="#ea580c" d="M352 248 H330 V238 H740"/>
-      <path class="wire" stroke="#dc2626" d="M668 226 H685 V214 H740"/>
-      <path class="wire" stroke="#374151" d="M668 380 H680 V260 H740"/>
-      <!-- amp -->
-      <path class="wire" stroke="#0891b2" d="M352 296 H335 V350 H740"/>
-      <path class="wire" stroke="#dc2626" d="M668 286 H695 V344 H740"/>
-      <path class="wire" stroke="#374151" d="M668 380 H690 V396 H740"/>
-      <!-- motor -->
-      <path class="wire" stroke="#ca8a04" d="M352 344 H340 V358 H290"/>
-      <path class="wire" stroke="#dc2626" d="M668 226 H655 V372 H290"/>
-      <path class="wire" stroke="#374151" d="M352 380 H345 V396 H290"/>
-    </svg>
-  </div>
-
+  <h2>3. Build order</h2>
   <div class="note ok">
-    <b>Build order:</b> 1) OLED only &rarr; 2) add ToF &rarr; 3) add mic &rarr; 4) add touch
-    &rarr; 5) amp + speaker &rarr; 6) motor. Upload and verify each sketch before the next step.
+    <b>1.</b> OLED only &rarr; <b>2.</b> add ToF (shares I2C) &rarr; <b>3.</b> add mic &rarr;
+    <b>4.</b> add touch &rarr; <b>5.</b> amp + speaker &rarr; <b>6.</b> motor.
+    Upload and verify each sketch before moving to the next.
   </div>
 
-  <!-- ============================================================ ESP32 MINI -->
-  <h2><span class="badge mini">Board 2</span> ESP32 Mini (ESP32-C3 / small dev board)</h2>
-
-  <p>Use this build for a small C3 / mini board (USB-C, fewer pins). <b>Two differences that
-     matter:</b></p>
-  <ul>
-    <li><b>No DAC.</b> The classic GPIO25 DAC does not exist, so audio is generated with
-        <code>ledcWriteTone()</code> (a PWM square wave) on a normal GPIO. Sound is thinner but
-        it works.</li>
-    <li><b>Fewer exposed pins.</b> Prefer GPIO4/5 for I2C (many mini boards default to SDA=GPIO8,
-        SCL=GPIO9 &mdash; either is fine, just stay consistent in the sketch).</li>
-  </ul>
-
-  <table>
-    <tr><th>Module</th><th>Module pin</th><th class="c">Goes to</th><th class="c">Mini pin</th><th>Notes</th></tr>
-    <tr><td>SSD1306 OLED</td><td>VCC</td><td class="c"><span class="chip r">3V3</span></td><td class="c">3V3</td><td></td></tr>
-    <tr><td>SSD1306 OLED</td><td>GND</td><td class="c"><span class="chip k">GND</span></td><td class="c">GND</td><td></td></tr>
-    <tr><td>SSD1306 OLED</td><td>SDA</td><td class="c"><span class="chip g">SDA</span></td><td class="c">GPIO8</td><td>alt: GPIO4</td></tr>
-    <tr><td>SSD1306 OLED</td><td>SCL</td><td class="c"><span class="chip b">SCL</span></td><td class="c">GPIO9</td><td>alt: GPIO5</td></tr>
-    <tr><td>VL53L0X ToF</td><td>VCC</td><td class="c"><span class="chip r">3V3</span></td><td class="c">3V3</td><td></td></tr>
-    <tr><td>VL53L0X ToF</td><td>GND</td><td class="c"><span class="chip k">GND</span></td><td class="c">GND</td><td></td></tr>
-    <tr><td>VL53L0X ToF</td><td>SDA</td><td class="c"><span class="chip g">SDA</span></td><td class="c">GPIO8</td><td>same bus</td></tr>
-    <tr><td>VL53L0X ToF</td><td>SCL</td><td class="c"><span class="chip b">SCL</span></td><td class="c">GPIO9</td><td>same bus</td></tr>
-    <tr><td>MAX4466 mic</td><td>VCC</td><td class="c"><span class="chip r">3V3</span></td><td class="c">3V3</td><td></td></tr>
-    <tr><td>MAX4466 mic</td><td>GND</td><td class="c"><span class="chip k">GND</span></td><td class="c">GND</td><td></td></tr>
-    <tr><td>MAX4466 mic</td><td>OUT</td><td class="c"><span class="chip p">OUT</span></td><td class="c">GPIO2</td><td>ADC1 pin</td></tr>
-    <tr><td>TTP223 touch</td><td>VCC</td><td class="c"><span class="chip r">3V3</span></td><td class="c">3V3</td><td></td></tr>
-    <tr><td>TTP223 touch</td><td>GND</td><td class="c"><span class="chip k">GND</span></td><td class="c">GND</td><td></td></tr>
-    <tr><td>TTP223 touch</td><td>OUT (SIG)</td><td class="c"><span class="chip o">OUT</span></td><td class="c">GPIO3</td><td></td></tr>
-    <tr><td>HXJ8002 amp</td><td>5V</td><td class="c"><span class="chip r">5V</span></td><td class="c">5V / VBUS</td><td>if board splits 5V</td></tr>
-    <tr><td>HXJ8002 amp</td><td>GND</td><td class="c"><span class="chip k">GND</span></td><td class="c">GND</td><td>common ground</td></tr>
-    <tr><td>HXJ8002 amp</td><td>L (audio in)</td><td class="c"><span class="chip c">PWM</span></td><td class="c">GPIO6</td><td><b>no DAC</b> &mdash; PWM tone</td></tr>
-    <tr><td>HXJ8002 amp</td><td>V2 (+)</td><td class="c"><span class="chip c">SPK</span></td><td class="c">40mm 8&Omega; +</td><td>speaker positive</td></tr>
-    <tr><td>HXJ8002 amp</td><td>V1 (&minus;)</td><td class="c"><span class="chip k">GND</span></td><td class="c">GND</td><td>speaker negative</td></tr>
-    <tr><td>BC337 driver</td><td>base</td><td class="c"><span class="chip y">1k&Omega;</span></td><td class="c">GPIO7</td><td>1&nbsp;k&Omega; in series</td></tr>
-    <tr><td>Motor</td><td>+</td><td class="c"><span class="chip r">3V3</span></td><td class="c">3V3</td><td>motor power</td></tr>
-    <tr><td>Motor</td><td>&minus;</td><td class="c"><span class="chip k">GND</span></td><td class="c">GND</td><td></td></tr>
-  </table>
-
-  <div class="panel">
-    <h3 style="margin:0 0 6px;font-size:14px;">Diagram &mdash; ESP32 Mini (C3)</h3>
-    <svg viewBox="0 0 1020 430" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <style>
-          .t { font: 12px ui-monospace, Consolas, monospace; }
-          .h { font: 600 14px -apple-system, Segoe UI, sans-serif; }
-          .wire { stroke-width: 2; fill: none; }
-        </style>
-      </defs>
-
-      <!-- mini block -->
-      <rect x="380" y="70" width="260" height="290" rx="12" fill="#0e3a47"/>
-      <text x="510" y="96" class="h" fill="#fff" text-anchor="middle">ESP32 Mini / C3</text>
-      <text x="510" y="114" class="t" fill="#7dd3fc" text-anchor="middle">USB-C 5V in &middot; no DAC</text>
-
-      <g class="t" fill="#e0f2fe">
-        <text x="396" y="148">3V3</text>
-        <text x="396" y="180">GPIO8 (SDA)</text>
-        <text x="396" y="212">GPIO9 (SCL)</text>
-        <text x="396" y="258">GPIO3 (touch)</text>
-        <text x="396" y="304">GPIO6 (PWM audio)</text>
-        <text x="396" y="340">GND</text>
-      </g>
-      <g class="t" fill="#e0f2fe">
-        <text x="586" y="148">GPIO2 (ADC)</text>
-        <text x="586" y="226">3V3</text>
-        <text x="586" y="272">5V / VBUS</text>
-        <text x="586" y="340">GND</text>
-      </g>
-      <circle cx="372" cy="144" r="4" fill="#dc2626"/>
-      <circle cx="372" cy="176" r="4" fill="#16a34a"/>
-      <circle cx="372" cy="208" r="4" fill="#2563eb"/>
-      <circle cx="372" cy="254" r="4" fill="#ea580c"/>
-      <circle cx="372" cy="300" r="4" fill="#0891b2"/>
-      <circle cx="372" cy="336" r="4" fill="#374151"/>
-      <circle cx="648" cy="144" r="4" fill="#7c3aed"/>
-      <circle cx="648" cy="222" r="4" fill="#dc2626"/>
-      <circle cx="648" cy="268" r="4" fill="#dc2626"/>
-      <circle cx="648" cy="336" r="4" fill="#374151"/>
-
-      <!-- OLED -->
-      <rect x="60" y="128" width="240" height="80" rx="10" fill="#ecfdf5" stroke="#16a34a"/>
-      <text x="76" y="150" class="h" fill="#065f46">SSD1306 OLED</text>
-      <text x="76" y="170" class="t" fill="#047857">VCC SDA SCL GND</text>
-      <text x="76" y="190" class="t" fill="#059669">28 x 18 window</text>
-
-      <!-- ToF -->
-      <rect x="60" y="230" width="240" height="74" rx="10" fill="#f5f3ff" stroke="#7c3aed"/>
-      <text x="76" y="252" class="h" fill="#5b21b6">VL53L0X ToF</text>
-      <text x="76" y="272" class="t" fill="#6d28d9">VCC SDA SCL GND</text>
-      <text x="76" y="290" class="t" fill="#7c3aed">14 x 10 window</text>
-
-      <!-- MIC -->
-      <rect x="720" y="104" width="240" height="72" rx="10" fill="#fdf2f8" stroke="#db2777"/>
-      <text x="736" y="126" class="h" fill="#9d174d">MAX4466 mic</text>
-      <text x="736" y="146" class="t" fill="#be185d">VCC  GND  OUT &#8594; ADC1</text>
-      <text x="736" y="164" class="t" fill="#db2777">clap / voice</text>
-
-      <!-- TOUCH -->
-      <rect x="720" y="196" width="240" height="72" rx="10" fill="#fff7ed" stroke="#ea580c"/>
-      <text x="736" y="218" class="h" fill="#9a3412">TTP223 touch</text>
-      <text x="736" y="238" class="t" fill="#c2410c">VCC  GND  OUT</text>
-      <text x="736" y="256" class="t" fill="#ea580c">tap / pet</text>
-
-      <!-- AMP -->
-      <rect x="720" y="288" width="240" height="80" rx="10" fill="#ecfeff" stroke="#0891b2"/>
-      <text x="736" y="310" class="h" fill="#155e75">HXJ8002 amp</text>
-      <text x="736" y="330" class="t" fill="#0e7490">5V  L  GND  V1/V2</text>
-      <text x="736" y="348" class="t" fill="#0891b2">40mm 8&#937; speaker</text>
-
-      <!-- MOTOR -->
-      <rect x="60" y="320" width="240" height="72" rx="10" fill="#fefce8" stroke="#ca8a04"/>
-      <text x="76" y="342" class="h" fill="#854d0e">Motor + BC337</text>
-      <text x="76" y="362" class="t" fill="#a16207">GPIO7 &#8594; 1k&#937; &#8594; base</text>
-      <text x="76" y="380" class="t" fill="#ca8a04">3V3 &#8594; motor +</text>
-
-      <!-- wires -->
-      <path class="wire" stroke="#dc2626" d="M372 144 H340 V138 H300"/>
-      <path class="wire" stroke="#16a34a" d="M372 176 H335 V156 H300"/>
-      <path class="wire" stroke="#2563eb" d="M372 208 H330 V174 H300"/>
-      <path class="wire" stroke="#374151" d="M372 336 H325 V198 H300"/>
-      <path class="wire" stroke="#dc2626" d="M372 144 H320 V244 H300"/>
-      <path class="wire" stroke="#16a34a" d="M372 176 H315 V258 H300"/>
-      <path class="wire" stroke="#2563eb" d="M372 208 H310 V276 H300"/>
-      <path class="wire" stroke="#374151" d="M372 336 H305 V292 H300"/>
-      <path class="wire" stroke="#7c3aed" d="M648 144 H680 V140 H720"/>
-      <path class="wire" stroke="#dc2626" d="M648 222 H670 V156 H720"/>
-      <path class="wire" stroke="#374151" d="M648 336 H670 V168 H720"/>
-      <path class="wire" stroke="#ea580c" d="M372 254 H350 V232 H720"/>
-      <path class="wire" stroke="#dc2626" d="M648 222 H660 V210 H720"/>
-      <path class="wire" stroke="#374151" d="M648 336 H655 V256 H720"/>
-      <path class="wire" stroke="#0891b2" d="M372 300 H345 V328 H720"/>
-      <path class="wire" stroke="#dc2626" d="M648 268 H690 V302 H720"/>
-      <path class="wire" stroke="#374151" d="M648 336 H695 V354 H720"/>
-      <path class="wire" stroke="#ca8a04" d="M372 336 H360 V344 H300"/>
-      <path class="wire" stroke="#dc2626" d="M648 222 H640 V366 H300"/>
-      <path class="wire" stroke="#374151" d="M372 336 H355 V380 H300"/>
-    </svg>
-  </div>
-
-  <div class="note warn">
-    <b>Mini-board cautions:</b> GPIO8/9 are often the boot strapping pins (GPIO9 = boot mode).
-    Keep I2C pull-ups modest (2.2&ndash;4.7&nbsp;k&Omega;) and disconnect the OLED/ToF while
-    flashing if the board fails to boot. On boards that expose <code>5V</code>, verify it is a real
-    5&nbsp;V rail before powering the amp from it; if unsure, power the amp from USB directly.
-  </div>
-
-  <!-- ============================================================ SKETCH DIFF -->
-  <h2>Sketch changes for the Mini (C3)</h2>
-  <table>
-    <tr><th>What</th><th>DevKit version</th><th>Mini / C3 version</th></tr>
-    <tr><td>I2C pins</td><td><code>SDA=21, SCL=22</code></td><td><code>SDA=8, SCL=9</code> (or 4/5)</td></tr>
-    <tr><td>Mic input</td><td><code>GPIO35</code></td><td><code>GPIO2</code> (ADC1)</td></tr>
-    <tr><td>Touch input</td><td><code>GPIO32</code></td><td><code>GPIO3</code></td></tr>
-    <tr><td>Motor PWM</td><td><code>GPIO27</code></td><td><code>GPIO7</code></td></tr>
-    <tr><td>Audio out</td><td><code>GPIO25</code> real DAC</td><td><code>GPIO6</code> PWM tone</td></tr>
-    <tr><td>Board</td><td><code>esp32</code></td><td><code>esp32c3</code></td></tr>
-  </table>
-
-  <div class="note">
-    For audio on the C3, replace the DAC write with a tone generator:
-    <pre style="background:#1f2430;color:#eef0ff;border-radius:8px;padding:12px;font-size:12.5px;overflow-x:auto">
-// ESP32-C3: no DAC, make a tone with LEDC PWM
-ledcSetup(0, 2000, 8);              // pin, 2 kHz, 8-bit
-ledcAttachPin(6, 0);                // tone out on GPIO6
-ledcWrite(0, 128);                  // square wave &#8594; amp L input
-    </pre>
-    Swap pin <code>6</code>, channel <code>0</code>, and the values as needed. Everything else in the
-    existing sketches stays the same apart from the pin numbers above.
-  </div>
-
-  <h2>Power summary (both boards)</h2>
+  <h2>4. Power summary (both boards)</h2>
   <table>
     <tr><th>Rail</th><th>Source</th><th>Feeds</th></tr>
     <tr><td><span class="chip r">5 V</span></td><td>USB (board VIN / VBUS)</td><td>HXJ8002 amp only</td></tr>
@@ -403,10 +110,26 @@ ledcWrite(0, 128);                  // square wave &#8594; amp L input
     <tr><td><span class="chip k">GND</span></td><td>board ground</td><td>every module (common ground)</td></tr>
   </table>
 
+  <p style="font-size:12.5px;">
+    Looking for the combined two-board overview with the full wiring diagrams?
+    <a href="schematics.html">Open the master schematics page &rarr;</a>
+  </p>
+
+  <div class="legend">
+    <span><span class="chip r">RED</span> 3V3 / 5V power</span>
+    <span><span class="chip k">BLACK</span> GND</span>
+    <span><span class="chip g">GREEN</span> SDA</span>
+    <span><span class="chip b">BLUE</span> SCL</span>
+    <span><span class="chip p">PURPLE</span> mic out</span>
+    <span><span class="chip o">ORANGE</span> touch out</span>
+    <span><span class="chip c">CYAN</span> audio</span>
+    <span><span class="chip y">YELLOW</span> motor PWM</span>
+  </div>
+
   <div class="note danger">
-    <b>Safety:</b> all modules share one common ground. Power the amp from 5&nbsp;V but tie its
-    GND to the board GND. Do not back-feed 5&nbsp;V into the 3V3 rail. Disconnect USB before
-    rewiring the motor or amp.
+    <b>Safety.</b> All modules share one common ground. Power the amp from 5&nbsp;V but tie its GND to
+    the board GND. Do not back-feed 5&nbsp;V into the 3V3 rail. Disconnect USB before rewiring the
+    motor or amp. Never drive a motor directly from a GPIO pin.
   </div>
 
 </div>

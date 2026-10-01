@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VL53L0X ToF &mdash; Desk Buddy Schematics</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="index.html">&larr; All components</a>
+
+  <div class="nav">
+    <a href="component-oled.html">SSD1306 OLED</a>
+    <a href="component-tof.html" class="active">VL53L0X ToF</a>
+    <a href="component-mic.html">MAX4466 Mic</a>
+    <a href="component-touch.html">TTP223 Touch</a>
+    <a href="component-amp.html">HXJ8002 Amp</a>
+    <a href="component-motor.html">Motor + BC337</a>
+    <a href="index.html">Overview</a>
+  </div>
+
+  <h1>VL53L0X ToF sensor</h1>
+  <p class="sub">Time-of-flight distance sensor &mdash; 4 wires on the <b>same</b> I2C bus as the OLED &middot; sits behind the 14 &times; 10 mm panel window</p>
+
+  <div class="note">
+    <b>What it is.</b> A laser time-of-flight ranger. It measures how far an object is in
+    millimetres using reflected light, with no touching involved. The pet uses it to notice when you
+    put a hand or a cup in front of its face.
+  </div>
+
+  <h2>1. Connection table</h2>
+  <table>
+    <tr><th>ToF pin</th><th class="c">Wire colour</th><th class="c">Normal DevKit</th><th class="c">ESP32 Mini / C3</th><th>Notes</th></tr>
+    <tr><td><b>VCC</b></td><td class="c"><span class="chip r">RED</span></td><td class="c">3V3</td><td class="c">3V3</td><td>3.3V module &mdash; do not use 5V</td></tr>
+    <tr><td><b>GND</b></td><td class="c"><span class="chip k">BLACK</span></td><td class="c">GND</td><td class="c">GND</td><td>common ground</td></tr>
+    <tr><td><b>SDA</b></td><td class="c"><span class="chip g">GREEN</span></td><td class="c">GPIO21</td><td class="c">GPIO8 <span style="color:#6b7280">(alt GPIO4)</span></td><td>shared with OLED</td></tr>
+    <tr><td><b>SCL</b></td><td class="c"><span class="chip b">BLUE</span></td><td class="c">GPIO22</td><td class="c">GPIO9 <span style="color:#6b7280">(alt GPIO5)</span></td><td>shared with OLED</td></tr>
+  </table>
+
+  <h2>2. Diagram &mdash; shared I2C bus</h2>
+  <div class="panel">
+    <p style="font-size:12.5px;color:#6b7280;margin:0 0 6px;">
+      The OLED and the ToF plug onto the <b>same two wires</b>. One SDA line, one SCL line, both
+      modules hanging off them. Each module has its own I2C address, so they answer separately.
+    </p>
+    <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg">
+      <style>
+        .t { font: 11px ui-monospace, Consolas, monospace; }
+        .h { font: 600 13px -apple-system, Segoe UI, sans-serif; }
+        .w { stroke-width: 2.4; fill: none; stroke-linecap: round; }
+      </style>
+
+      <!-- ESP32 -->
+      <rect x="255" y="40" width="130" height="150" rx="10" fill="#1f2430"/>
+      <text x="320" y="62" class="h" fill="#fff" text-anchor="middle">ESP32</text>
+      <rect x="243" y="86" width="12" height="14" rx="3" fill="#16a34a"/>
+      <rect x="243" y="112" width="12" height="14" rx="3" fill="#2563eb"/>
+      <rect x="243" y="152" width="12" height="14" rx="3" fill="#dc2626"/>
+      <rect x="243" y="172" width="12" height="14" rx="3" fill="#374151"/>
+      <g class="t" fill="#cbd5e1" text-anchor="end">
+        <text x="237" y="97">GPIO21 SDA</text>
+        <text x="237" y="123">GPIO22 SCL</text>
+        <text x="237" y="163">3V3</text>
+        <text x="237" y="183">GND</text>
+      </g>
+
+      <!-- OLED -->
+      <rect x="30" y="60" width="130" height="86" rx="9" fill="#ecfdf5" stroke="#16a34a"/>
+      <text x="46" y="82" class="h" fill="#065f46">SSD1306 OLED</text>
+      <g class="t" fill="#047857">
+        <text x="46" y="102">SDA &#8594; shared</text>
+        <text x="46" y="118">SCL &#8594; shared</text>
+        <text x="46" y="134">3V3 / GND</text>
+      </g>
+
+      <!-- ToF -->
+      <rect x="480" y="60" width="130" height="86" rx="9" fill="#f5f3ff" stroke="#7c3aed"/>
+      <text x="496" y="82" class="h" fill="#5b21b6">VL53L0X ToF</text>
+      <g class="t" fill="#6d28d9">
+        <text x="496" y="102">SDA &#8594; shared</text>
+        <text x="496" y="118">SCL &#8594; shared</text>
+        <text x="496" y="134">3V3 / GND</text>
+      </g>
+
+      <!-- SDA bus -->
+      <path class="w" stroke="#16a34a" d="M243 93 H180 V103 H160"/>
+      <path class="w" stroke="#16a34a" d="M243 93 H450 V103 H480"/>
+      <!-- SCL bus -->
+      <path class="w" stroke="#2563eb" d="M243 119 H170 V119 H160"/>
+      <path class="w" stroke="#2563eb" d="M243 119 H460 V119 H480"/>
+      <!-- power -->
+      <path class="w" stroke="#dc2626" d="M243 159 H205 V220 H120 V146 H160"/>
+      <path class="w" stroke="#dc2626" d="M243 159 H215 V228 H520 V146 H480"/>
+      <path class="w" stroke="#374151" d="M243 179 H200 V236 H110 V146 H160"/>
+      <path class="w" stroke="#374151" d="M243 179 H210 V244 H530 V146 H480"/>
+
+      <text x="320" y="212" class="t" fill="#6b7280" text-anchor="middle">3V3 &#8594; both modules &#183; GND &#8594; both modules</text>
+    </svg>
+  </div>
+
+  <h2>3. Sketch pins</h2>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Normal DevKit</h3>
+      <pre>#define SDA_PIN 21
+#define SCL_PIN 22
+#include &lt;Wire.h&gt;
+#include &lt;VL53L0X.h&gt;
+
+VL53L0X sensor;
+Wire.begin(SDA_PIN, SCL_PIN);
+sensor.setXSHUT(true);</pre>
+    </div>
+    <div class="panel">
+      <h3>ESP32 Mini / C3</h3>
+      <pre>#define SDA_PIN 8
+#define SCL_PIN 9
+#include &lt;Wire.h&gt;
+#include &lt;VL53L0X.h&gt;
+
+VL53L0X sensor;
+Wire.begin(SDA_PIN, SCL_PIN);
+sensor.setXSHUT(true);</pre>
+    </div>
+  </div>
+
+  <div class="note warn">
+    <b>Watch out.</b>
+    <ul style="margin:6px 0 0;padding-left:20px;">
+      <li><b>XSHUT / SHUT pin.</b> Some ToF breakout boards carry a 5th pin (<code>XSHUT</code> or
+        <code>SHUT</code>). If yours has one, tie it to <b>3V3</b> so the sensor powers up when the
+        board does. Leave it unconnected on boards without it.</li>
+      <li><b>Address conflict.</b> Two VL53L0X modules on one bus clash. You only have one, so this
+        is fine &mdash; but if you add a second, it needs an XSHUT line to wake them one at a time.</li>
+      <li><b>Distance range.</b> Useful roughly 30&ndash;2000 mm. Too close and it reads zero.</li>
+    </ul>
+  </div>
+
+  <div class="note ok">
+    <b>Test.</b> Run the ToF sketch alone. Print the millimetre reading to the Serial Monitor and wave
+    a hand in front of the sensor &mdash; the number should move.
+  </div>
+
+  <h2>4. Related pages</h2>
+  <table>
+    <tr><th>Page</th><th>Why</th></tr>
+    <tr><td><a href="component-oled.html">SSD1306 OLED</a></td><td>the other device on this I2C bus</td></tr>
+    <tr><td><a href="index.html">Overview</a></td><td>full pin map for both boards</td></tr>
+  </table>
+
+</div>
+</body>
+</html>

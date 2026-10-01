@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motor + BC337 Driver &mdash; Desk Buddy Schematics</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="index.html">&larr; All components</a>
+
+  <div class="nav">
+    <a href="component-oled.html">SSD1306 OLED</a>
+    <a href="component-tof.html">VL53L0X ToF</a>
+    <a href="component-mic.html">MAX4466 Mic</a>
+    <a href="component-touch.html">TTP223 Touch</a>
+    <a href="component-amp.html">HXJ8002 Amp</a>
+    <a href="component-motor.html" class="active">Motor + BC337</a>
+    <a href="index.html">Overview</a>
+  </div>
+
+  <h1>Motor + BC337 driver</h1>
+  <p class="sub">Movement / nodding &mdash; the one module needing a transistor &middot; 4 wires incl. a 1&nbsp;k&Omega; base resistor</p>
+
+  <div class="note">
+    <b>What it is.</b> A small motor (for nodding or bobbing) driven through a single BC337 NPN
+    transistor. An ESP32 pin can only source about 12&nbsp;mA &mdash; nowhere near enough to spin a
+    motor. The BC337 acts as a switch: a tiny current into its base lets the full motor current
+    flow, which is why the 1&nbsp;k&Omega; resistor is mandatory.
+  </div>
+
+  <h2>1. Connection table</h2>
+  <table>
+    <tr><th>Where</th><th class="c">Wire colour</th><th class="c">Normal DevKit</th><th class="c">ESP32 Mini / C3</th><th>Notes</th></tr>
+    <tr><td>ESP32 PWM pin</td><td class="c"><span class="chip y">YELLOW</span></td><td class="c">GPIO27</td><td class="c">GPIO7</td><td>PWM for smooth speed control</td></tr>
+    <tr><td>1&nbsp;k&Omega; resistor</td><td class="c"><span class="chip y">in line</span></td><td class="c">GPIO27 &rarr; base</td><td class="c">GPIO7 &rarr; base</td><td>protects the pin from excess base current</td></tr>
+    <tr><td>BC337 <b>base</b></td><td class="c"><span class="chip y">YELLOW</span></td><td class="c">after the resistor</td><td class="c">after the resistor</td><td>flat side facing the 1k</td></tr>
+    <tr><td>Motor <b>+</b></td><td class="c"><span class="chip r">RED</span></td><td class="c">3V3</td><td class="c">3V3</td><td>motor supply</td></tr>
+    <tr><td>Motor <b>&minus;</b></td><td class="c"><span class="chip k">BLACK</span></td><td class="c">GND</td><td class="c">GND</td><td>must share GND with the ESP32</td></tr>
+  </table>
+
+  <div class="panel" style="margin-top:10px;">
+    <h3>Parts list</h3>
+    <table style="margin:6px 0 0;">
+      <tr><th>Qty</th><th>Part</th><th>Value</th><th>Notes</th></tr>
+      <tr><td class="c">1</td><td>BC337</td><td>&mdash;</td><td>NPN transistor, TO-92</td></tr>
+      <tr><td class="c">1</td><td>resistor</td><td><b>1&nbsp;k&Omega;</b></td><td>base resistor &mdash; do not skip</td></tr>
+      <tr><td class="c">1</td><td>small DC motor</td><td>3&nbsp;V, ~100&nbsp;mA</td><td>for nodding / bobbing</td></tr>
+      <tr><td class="c">1</td><td>flyback diode</td><td>1N4148 or 1N4007</td><td><b>optional</b> but recommended, across motor</td></tr>
+    </table>
+  </div>
+
+  <h2>2. Diagram &mdash; pin locations</h2>
+
+  <div class="grid2">
+
+    <div class="panel">
+      <h3><span class="badge dev">DevKit</span> &mdash; GPIO27</h3>
+      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .t { font: 11px ui-monospace, Consolas, monospace; }
+          .h { font: 600 13px -apple-system, Segoe UI, sans-serif; }
+          .w { stroke-width: 2.2; fill: none; stroke-linecap: round; }
+        </style>
+        <rect x="35" y="35" width="140" height="170" rx="10" fill="#1f2430"/>
+        <text x="105" y="57" class="h" fill="#fff" text-anchor="middle">ESP32 DevKit</text>
+
+        <rect x="21" y="80" width="14" height="14" rx="3" fill="#ca8a04"/>
+        <text x="45" y="91" class="t" fill="#cbd5e1">GPIO27</text>
+        <rect x="21" y="106" width="14" height="14" rx="3" fill="#dc2626"/>
+        <text x="45" y="117" class="t" fill="#cbd5e1">3V3</text>
+        <rect x="21" y="132" width="14" height="14" rx="3" fill="#374151"/>
+        <text x="45" y="143" class="t" fill="#cbd5e1">GND</text>
+
+        <!-- resistor -->
+        <rect x="215" y="70" width="42" height="20" rx="4" fill="#fefce8" stroke="#ca8a04" stroke-width="2"/>
+        <text x="236" y="58" class="t" fill="#854d0e" text-anchor="middle">1 k&Omega;</text>
+
+        <!-- transistor -->
+        <g>
+          <rect x="300" y="95" width="56" height="52" rx="22" fill="#f8fafc" stroke="#475569" stroke-width="2"/>
+          <line x1="300" y1="105" x2="356" y2="105" stroke="#94a3b8"/>
+          <line x1="300" y1="121" x2="356" y2="121" stroke="#94a3b8"/>
+          <line x1="300" y1="137" x2="356" y2="137" stroke="#94a3b8"/>
+        </g>
+        <text x="328" y="165" class="t" fill="#334155" text-anchor="middle">BC337</text>
+        <text x="360" y="109" class="t" fill="#334155">B</text>
+        <text x="360" y="125" class="t" fill="#334155">C</text>
+        <text x="360" y="141" class="t" fill="#334155">E</text>
+
+        <!-- motor -->
+        <circle cx="300" cy="205" r="20" fill="#fefce8" stroke="#ca8a04" stroke-width="2"/>
+        <text x="300" y="209" class="t" fill="#854d0e" text-anchor="middle">M</text>
+        <text x="300" y="234" class="t" fill="#854d0e" text-anchor="middle">3V DC</text>
+
+        <path class="w" stroke="#ca8a04" d="M35 87 H215"/>
+        <path class="w" stroke="#ca8a04" d="M257 80 H285 V105 H300"/>
+        <path class="w" stroke="#dc2626" d="M35 113 H270 V190 H300"/>
+        <path class="w" stroke="#dc2626" d="M300 190 V125 H356"/>
+        <path class="w" stroke="#374151" d="M35 139 H245 V215 H300"/>
+        <path class="w" stroke="#374151" d="M300 215 H260 V137 H300"/>
+      </svg>
+      <p style="font-size:12px;color:#6b7280;margin:8px 0 0;">
+        Collector (C) to motor&nbsp;+, emitter (E) to GND, base (B) via the 1&nbsp;k&Omega;.
+      </p>
+    </div>
+
+    <div class="panel">
+      <h3><span class="badge mini">Mini / C3</span> &mdash; GPIO7</h3>
+      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .t { font: 11px ui-monospace, Consolas, monospace; }
+          .h { font: 600 13px -apple-system, Segoe UI, sans-serif; }
+          .w { stroke-width: 2.2; fill: none; stroke-linecap: round; }
+        </style>
+        <rect x="35" y="35" width="140" height="170" rx="10" fill="#0e3a47"/>
+        <text x="105" y="57" class="h" fill="#fff" text-anchor="middle">ESP32 Mini</text>
+
+        <rect x="21" y="80" width="14" height="14" rx="3" fill="#ca8a04"/>
+        <text x="45" y="91" class="t" fill="#bae6fd">GPIO7</text>
+        <rect x="21" y="106" width="14" height="14" rx="3" fill="#dc2626"/>
+        <text x="45" y="117" class="t" fill="#bae6fd">3V3</text>
+        <rect x="21" y="132" width="14" height="14" rx="3" fill="#374151"/>
+        <text x="45" y="143" class="t" fill="#bae6fd">GND</text>
+
+        <rect x="215" y="70" width="42" height="20" rx="4" fill="#fefce8" stroke="#ca8a04" stroke-width="2"/>
+        <text x="236" y="58" class="t" fill="#854d0e" text-anchor="middle">1 k&Omega;</text>
+
+        <g>
+          <rect x="300" y="95" width="56" height="52" rx="22" fill="#f8fafc" stroke="#475569" stroke-width="2"/>
+          <line x1="300" y1="105" x2="356" y2="105" stroke="#94a3b8"/>
+          <line x1="300" y1="121" x2="356" y2="121" stroke="#94a3b8"/>
+          <line x1="300" y1="137" x2="356" y2="137" stroke="#94a3b8"/>
+        </g>
+        <text x="328" y="165" class="t" fill="#334155" text-anchor="middle">BC337</text>
+        <text x="360" y="109" class="t" fill="#334155">B</text>
+        <text x="360" y="125" class="t" fill="#334155">C</text>
+        <text x="360" y="141" class="t" fill="#334155">E</text>
+
+        <circle cx="300" cy="205" r="20" fill="#fefce8" stroke="#ca8a04" stroke-width="2"/>
+        <text x="300" y="209" class="t" fill="#854d0e" text-anchor="middle">M</text>
+        <text x="300" y="234" class="t" fill="#854d0e" text-anchor="middle">3V DC</text>
+
+        <path class="w" stroke="#ca8a04" d="M35 87 H215"/>
+        <path class="w" stroke="#ca8a04" d="M257 80 H285 V105 H300"/>
+        <path class="w" stroke="#dc2626" d="M35 113 H270 V190 H300"/>
+        <path class="w" stroke="#dc2626" d="M300 190 V125 H356"/>
+        <path class="w" stroke="#374151" d="M35 139 H245 V215 H300"/>
+        <path class="w" stroke="#374151" d="M300 215 H260 V137 H300"/>
+      </svg>
+      <p style="font-size:12px;color:#6b7280;margin:8px 0 0;">
+        Identical wiring, different PWM pin. GPIO7 is a normal GPIO on the C3.
+      </p>
+    </div>
+
+  </div>
+
+  <h2>3. Sketch pins</h2>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Normal DevKit</h3>
+      <pre>#define MOTOR_PIN 27
+#define MOTOR_CH  0
+
+ledcSetup(MOTOR_CH, 20000, 8);
+ledcAttachPin(MOTOR_PIN, MOTOR_CH);
+
+ledcWrite(MOTOR_CH, duty);  // 0 = off, 255 = full</pre>
+    </div>
+    <div class="panel">
+      <h3>ESP32 Mini / C3</h3>
+      <pre>#define MOTOR_PIN 7
+#define MOTOR_CH  0
+
+ledcSetup(MOTOR_CH, 20000, 8);
+ledcAttachPin(MOTOR_PIN, MOTOR_CH);
+
+ledcWrite(MOTOR_CH, duty);  // 0 = off, 255 = full</pre>
+    </div>
+  </div>
+
+  <h2>4. Flyback diode</h2>
+  <p>A motor is a coil. When you switch it off, the collapsing magnetic field pushes a
+     <b>voltage spike</b> back up the wire, which can kill the ESP32 or the transistor. A diode solves
+     this:</p>
+
+  <div class="panel">
+    <h3>Diode orientation</h3>
+<pre>      3V3 (+)                motor (+)
+         |                       |
+         |                       C (BC337 collector)
+         |                     motor
+         |                       |
+        GND ------------------- E  (emitter)
+
+  Diode across the motor, cathode (the line / banded end)
+  to +3V3, anode to the collector/motor side.</pre>
+    <p style="font-size:12.5px;margin:6px 0 0;">
+      The banded end of the diode faces <b>3V3</b>. It only conducts when the spike reverses the
+      polarity, absorbing it harmlessly. A 1N4148 is plenty for a small motor.
+    </p>
+  </div>
+
+  <h2>5. BC337 pinout</h2>
+  <p>Looking at the <b>flat face</b> of the TO-92 transistor with the leads pointing down, the pins
+     are <b>B &middot; C &middot; E</b> (base, collector, emitter) left to right. Double-check with a
+     multimeter before soldering &mdash; getting these wrong means the motor sits on and the
+     transistor gets hot.</p>
+
+  <div class="note warn">
+    <b>Watch out.</b>
+    <ul style="margin:6px 0 0;padding-left:20px;">
+      <li><b>The 1&nbsp;k&Omega; resistor is not optional.</b> Without it the base current is
+        uncontrolled and you can destroy the ESP32 pin or the transistor.</li>
+      <li><b>Common ground.</b> Motor GND must be the ESP32 GND. A floating motor supply will make
+        the behaviour erratic.</li>
+      <li><b>Noise.</b> Motors inject noise back into the rail. Keep the motor and its two wires away
+        from the mic wire, and add 100&nbsp;nF + 100&nbsp;&micro;F decoupling across the motor if the
+        ESP32 browns out or resets.</li>
+      <li>Never drive a motor <b>directly</b> from a GPIO pin, on either board.</li>
+      <li>Disconnect USB before rewiring the motor.</li>
+    </ul>
+  </div>
+
+  <div class="note ok">
+    <b>Test.</b> Wire motor +, motor &minus;, base via 1&nbsp;k&Omega;. Then
+    <code>ledcWrite(MOTOR_CH, 255)</code> should spin it, <code>0</code> should stop it. Test this
+    before adding PWM ramping.
+  </div>
+
+  <h2>6. Related pages</h2>
+  <table>
+    <tr><th>Page</th><th>Why</th></tr>
+    <tr><td><a href="component-mic.html">MAX4466 Mic</a></td><td>the other module that hates motor noise</td></tr>
+    <tr><td><a href="index.html">Overview</a></td><td>full pin map and power summary</td></tr>
+  </table>
+
+</div>
+</body>
+</html>

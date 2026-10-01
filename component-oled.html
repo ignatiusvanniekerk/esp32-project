@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SSD1306 OLED &mdash; Desk Buddy Schematics</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="index.html">&larr; All components</a>
+
+  <div class="nav">
+    <a href="component-oled.html" class="active">SSD1306 OLED</a>
+    <a href="component-tof.html">VL53L0X ToF</a>
+    <a href="component-mic.html">MAX4466 Mic</a>
+    <a href="component-touch.html">TTP223 Touch</a>
+    <a href="component-amp.html">HXJ8002 Amp</a>
+    <a href="component-motor.html">Motor + BC337</a>
+    <a href="index.html">Overview</a>
+  </div>
+
+  <h1>SSD1306 OLED</h1>
+  <p class="sub">0.96&quot; I2C display &mdash; 4 wires: VCC, GND, SDA, SCL &middot; shares the I2C bus with the VL53L0X ToF sensor</p>
+
+  <div class="note">
+    <b>What it is.</b> A 128&times;64 monochrome OLED on a 4-pin I2C module. Inside the housing it sits
+    behind the <b>28 &times; 18 mm</b> window in the front panel. Four wires only &mdash; it is the very
+    first module you should wire and test.
+  </div>
+
+  <h2>1. Connection table</h2>
+  <table>
+    <tr><th>OLED pin</th><th class="c">Wire colour</th><th class="c">Normal DevKit</th><th class="c">ESP32 Mini / C3</th><th>Notes</th></tr>
+    <tr><td><b>VCC</b></td><td class="c"><span class="chip r">RED</span></td><td class="c">3V3</td><td class="c">3V3</td><td>never 5V &mdash; OLED modules are 3.3V</td></tr>
+    <tr><td><b>GND</b></td><td class="c"><span class="chip k">BLACK</span></td><td class="c">GND</td><td class="c">GND</td><td>common ground with everything</td></tr>
+    <tr><td><b>SDA</b></td><td class="c"><span class="chip g">GREEN</span></td><td class="c">GPIO21</td><td class="c">GPIO8 <span style="color:#6b7280">(alt GPIO4)</span></td><td>I2C data &mdash; shared with ToF</td></tr>
+    <tr><td><b>SCL</b></td><td class="c"><span class="chip b">BLUE</span></td><td class="c">GPIO22</td><td class="c">GPIO9 <span style="color:#6b7280">(alt GPIO5)</span></td><td>I2C clock &mdash; shared with ToF</td></tr>
+  </table>
+
+  <div class="legend">
+    <span><span class="chip r">RED</span> 3V3</span>
+    <span><span class="chip k">BLACK</span> GND</span>
+    <span><span class="chip g">GREEN</span> SDA</span>
+    <span><span class="chip b">BLUE</span> SCL</span>
+  </div>
+
+  <h2>2. Diagram &mdash; pin locations</h2>
+
+  <div class="grid2">
+
+    <div class="panel">
+      <h3><span class="badge dev">DevKit</span> pin layout</h3>
+      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .t { font: 11px ui-monospace, Consolas, monospace; }
+          .h { font: 600 13px -apple-system, Segoe UI, sans-serif; }
+          .w { stroke-width: 2.2; fill: none; stroke-linecap: round; }
+        </style>
+
+        <!-- board -->
+        <rect x="120" y="40" width="150" height="150" rx="10" fill="#1f2430"/>
+        <text x="195" y="62" class="h" fill="#fff" text-anchor="middle">ESP32 DevKit</text>
+
+        <!-- left pin pads -->
+        <g>
+          <rect x="106" y="86" width="14" height="14" rx="3" fill="#dc2626"/>
+          <rect x="106" y="112" width="14" height="14" rx="3" fill="#16a34a"/>
+          <rect x="106" y="138" width="14" height="14" rx="3" fill="#2563eb"/>
+          <rect x="106" y="164" width="14" height="14" rx="3" fill="#374151"/>
+        </g>
+        <g class="t" fill="#cbd5e1" text-anchor="end">
+          <text x="100" y="97">3V3</text>
+          <text x="100" y="123">GPIO21</text>
+          <text x="100" y="149">GPIO22</text>
+          <text x="100" y="175">GND</text>
+        </g>
+        <!-- right pin pad (I2C header) -->
+        <g>
+          <rect x="270" y="112" width="14" height="14" rx="3" fill="#16a34a"/>
+          <rect x="270" y="138" width="14" height="14" rx="3" fill="#2563eb"/>
+          <rect x="270" y="86" width="14" height="14" rx="3" fill="#dc2626"/>
+          <rect x="270" y="164" width="14" height="14" rx="3" fill="#374151"/>
+        </g>
+        <g class="t" fill="#cbd5e1">
+          <text x="292" y="97">3V3</text>
+          <text x="292" y="123">GPIO21</text>
+          <text x="292" y="149">GPIO22</text>
+          <text x="292" y="175">GND</text>
+        </g>
+
+        <!-- module -->
+        <rect x="20" y="80" width="70" height="100" rx="8" fill="#ecfdf5" stroke="#16a34a"/>
+        <text x="55" y="104" class="h" fill="#065f46" text-anchor="middle">OLED</text>
+        <g class="t" fill="#047857" text-anchor="middle">
+          <text x="55" y="124">VCC</text>
+          <text x="55" y="138">GND</text>
+          <text x="55" y="152">SDA</text>
+          <text x="55" y="166">SCL</text>
+        </g>
+
+        <!-- wires -->
+        <path class="w" stroke="#dc2626" d="M90 93 H100 V93 H106"/>
+        <path class="w" stroke="#374151" d="M90 145 H98 V171 H106"/>
+        <path class="w" stroke="#16a34a" d="M90 159 H94 V119 H106"/>
+        <path class="w" stroke="#2563eb" d="M90 173 H91 V145 H106"/>
+      </svg>
+      <p style="font-size:12px;color:#6b7280;margin:8px 0 0;">
+        On the DevKit the four wires can all come off the <b>left row</b> of header pins.
+      </p>
+    </div>
+
+    <div class="panel">
+      <h3><span class="badge mini">Mini / C3</span> pin layout</h3>
+      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .t { font: 11px ui-monospace, Consolas, monospace; }
+          .h { font: 600 13px -apple-system, Segoe UI, sans-serif; }
+          .w { stroke-width: 2.2; fill: none; stroke-linecap: round; }
+        </style>
+
+        <rect x="120" y="40" width="150" height="150" rx="10" fill="#0e3a47"/>
+        <text x="195" y="62" class="h" fill="#fff" text-anchor="middle">ESP32 Mini</text>
+
+        <g>
+          <rect x="106" y="86" width="14" height="14" rx="3" fill="#dc2626"/>
+          <rect x="106" y="112" width="14" height="14" rx="3" fill="#16a34a"/>
+          <rect x="106" y="138" width="14" height="14" rx="3" fill="#2563eb"/>
+          <rect x="106" y="164" width="14" height="14" rx="3" fill="#374151"/>
+        </g>
+        <g class="t" fill="#bae6fd" text-anchor="end">
+          <text x="100" y="97">3V3</text>
+          <text x="100" y="123">GPIO8</text>
+          <text x="100" y="149">GPIO9</text>
+          <text x="100" y="175">GND</text>
+        </g>
+        <g>
+          <rect x="270" y="86" width="14" height="14" rx="3" fill="#dc2626"/>
+          <rect x="270" y="112" width="14" height="14" rx="3" fill="#16a34a"/>
+          <rect x="270" y="138" width="14" height="14" rx="3" fill="#2563eb"/>
+          <rect x="270" y="164" width="14" height="14" rx="3" fill="#374151"/>
+        </g>
+        <g class="t" fill="#bae6fd">
+          <text x="292" y="97">3V3</text>
+          <text x="292" y="123">GPIO8</text>
+          <text x="292" y="149">GPIO9</text>
+          <text x="292" y="175">GND</text>
+        </g>
+
+        <rect x="20" y="80" width="70" height="100" rx="8" fill="#ecfdf5" stroke="#16a34a"/>
+        <text x="55" y="104" class="h" fill="#065f46" text-anchor="middle">OLED</text>
+        <g class="t" fill="#047857" text-anchor="middle">
+          <text x="55" y="124">VCC</text>
+          <text x="55" y="138">GND</text>
+          <text x="55" y="152">SDA</text>
+          <text x="55" y="166">SCL</text>
+        </g>
+
+        <path class="w" stroke="#dc2626" d="M90 93 H100 V93 H106"/>
+        <path class="w" stroke="#374151" d="M90 145 H98 V171 H106"/>
+        <path class="w" stroke="#16a34a" d="M90 159 H94 V119 H106"/>
+        <path class="w" stroke="#2563eb" d="M90 173 H91 V145 H106"/>
+      </svg>
+      <p style="font-size:12px;color:#6b7280;margin:8px 0 0;">
+        Many C3 boards already label <code>GPIO8</code> as <b>SDA</b> and <code>GPIO9</code> as
+        <b>SCL</b> &mdash; check your board's silkscreen.
+      </p>
+    </div>
+
+  </div>
+
+  <h2>3. Sketch pins</h2>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Normal DevKit</h3>
+      <pre>#define SDA_PIN 21
+#define SCL_PIN 22
+
+Adafruit_SSD1306 display(128, 64, &amp;Wire, -1);</pre>
+    </div>
+    <div class="panel">
+      <h3>ESP32 Mini / C3</h3>
+      <pre>#define SDA_PIN 8
+#define SCL_PIN 9
+
+Adafruit_SSD1306 display(128, 64, &amp;Wire, -1);</pre>
+    </div>
+  </div>
+
+  <div class="note warn">
+    <b>Watch out.</b>
+    <ul style="margin:6px 0 0;padding-left:20px;">
+      <li>Power the OLED from <b>3V3, not 5V</b> &mdash; 5V will damage most modules.</li>
+      <li>Some 4-pin modules are labelled <code>SCL</code>/<code>SDA</code> the other way round.
+        If the screen stays black, swap the two signal wires.</li>
+      <li>OLED and ToF live on the <b>same</b> SDA/SCL pair &mdash; you only daisy-chain them, do not
+        run two sets of wires to different pins.</li>
+    </ul>
+  </div>
+
+  <div class="note ok">
+    <b>Test first.</b> Flash the OLED-only sketch before adding anything else. If the panel lights up
+    you have confirmed 3V3, ground, and both I2C lines all the way to the display.
+  </div>
+
+  <h2>4. Related pages</h2>
+  <table>
+    <tr><th>Page</th><th>Why</th></tr>
+    <tr><td><a href="component-tof.html">VL53L0X ToF</a></td><td>shares these same two I2C wires</td></tr>
+    <tr><td><a href="index.html">Overview</a></td><td>full pin map for both boards</td></tr>
+  </table>
+
+</div>
+</body>
+</html>

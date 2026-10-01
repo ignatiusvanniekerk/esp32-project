@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TTP223 Touch Sensor &mdash; Desk Buddy Schematics</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="index.html">&larr; All components</a>
+
+  <div class="nav">
+    <a href="component-oled.html">SSD1306 OLED</a>
+    <a href="component-tof.html">VL53L0X ToF</a>
+    <a href="component-mic.html">MAX4466 Mic</a>
+    <a href="component-touch.html" class="active">TTP223 Touch</a>
+    <a href="component-amp.html">HXJ8002 Amp</a>
+    <a href="component-motor.html">Motor + BC337</a>
+    <a href="index.html">Overview</a>
+  </div>
+
+  <h1>TTP223 touch sensor</h1>
+  <p class="sub">Capacitive touch pad &mdash; 3 wires &middot; tap or stroke the top of the pet to wake it</p>
+
+  <div class="note">
+    <b>What it is.</b> A small capacitive touch controller. Your finger is conductive enough to change
+    the capacitance of its pad, and the TTP223 turns that into a clean digital HIGH or LOW. This is
+    how you pet it &mdash; stroke the top of the housing and it reacts.
+  </div>
+
+  <h2>1. Connection table</h2>
+  <table>
+    <tr><th>TTP223 pin</th><th class="c">Wire colour</th><th class="c">Normal DevKit</th><th class="c">ESP32 Mini / C3</th><th>Notes</th></tr>
+    <tr><td><b>VCC</b></td><td class="c"><span class="chip r">RED</span></td><td class="c">3V3</td><td class="c">3V3</td><td>3.3V module</td></tr>
+    <tr><td><b>GND</b></td><td class="c"><span class="chip k">BLACK</span></td><td class="c">GND</td><td class="c">GND</td><td>common ground</td></tr>
+    <tr><td><b>OUT / SIG</b></td><td class="c"><span class="chip o">ORANGE</span></td><td class="c">GPIO32</td><td class="c">GPIO3</td><td>digital in; add a 100k pull-up if it floats</td></tr>
+  </table>
+
+  <div class="note warn" style="margin-top:8px;">
+    <b>4-pin variant.</b> Some TTP223 boards have a fourth pin (<code>TP</code> or <code>OUT</code>
+    duplicate) or a <code>LED</code> pin. The wiring above assumes the common <b>3-pin</b> module
+    (VCC / GND / OUT). Check the silkscreen on yours before wiring.
+  </div>
+
+  <h2>2. Diagram &mdash; pin locations</h2>
+
+  <div class="grid2">
+
+    <div class="panel">
+      <h3><span class="badge dev">DevKit</span> &mdash; GPIO32</h3>
+      <svg viewBox="0 0 400 230" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .t { font: 11px ui-monospace, Consolas, monospace; }
+          .h { font: 600 13px -apple-system, Segoe UI, sans-serif; }
+          .w { stroke-width: 2.2; fill: none; stroke-linecap: round; }
+        </style>
+        <rect x="130" y="35" width="150" height="155" rx="10" fill="#1f2430"/>
+        <text x="205" y="57" class="h" fill="#fff" text-anchor="middle">ESP32 DevKit</text>
+
+        <rect x="116" y="80" width="14" height="14" rx="3" fill="#dc2626"/>
+        <rect x="116" y="106" width="14" height="14" rx="3" fill="#374151"/>
+        <g class="t" fill="#cbd5e1" text-anchor="end">
+          <text x="110" y="91">3V3</text>
+          <text x="110" y="117">GND</text>
+        </g>
+
+        <rect x="280" y="130" width="14" height="14" rx="3" fill="#ea580c"/>
+        <text x="302" y="141" class="t" fill="#cbd5e1">GPIO32</text>
+
+        <rect x="20" y="70" width="76" height="90" rx="8" fill="#fff7ed" stroke="#ea580c"/>
+        <text x="58" y="92" class="h" fill="#9a3412" text-anchor="middle">TTP223</text>
+        <g class="t" fill="#c2410c" text-anchor="middle">
+          <text x="58" y="112">VCC</text>
+          <text x="58" y="128">GND</text>
+          <text x="58" y="144">OUT</text>
+        </g>
+
+        <path class="w" stroke="#dc2626" d="M96 87 H106 V87 H116"/>
+        <path class="w" stroke="#374151" d="M96 135 H102 V113 H116"/>
+        <path class="w" stroke="#ea580c" d="M96 149 H92 V137 H280"/>
+      </svg>
+      <p style="font-size:12px;color:#6b7280;margin:8px 0 0;">
+        GPIO32 sits on the <b>right</b> row. It is a normal bidirectional GPIO &mdash; an internal
+        pull-up is available with <code>INPUT_PULLUP</code>.
+      </p>
+    </div>
+
+    <div class="panel">
+      <h3><span class="badge mini">Mini / C3</span> &mdash; GPIO3</h3>
+      <svg viewBox="0 0 400 230" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .t { font: 11px ui-monospace, Consolas, monospace; }
+          .h { font: 600 13px -apple-system, Segoe UI, sans-serif; }
+          .w { stroke-width: 2.2; fill: none; stroke-linecap: round; }
+        </style>
+        <rect x="130" y="35" width="150" height="155" rx="10" fill="#0e3a47"/>
+        <text x="205" y="57" class="h" fill="#fff" text-anchor="middle">ESP32 Mini</text>
+
+        <rect x="116" y="80" width="14" height="14" rx="3" fill="#dc2626"/>
+        <rect x="116" y="106" width="14" height="14" rx="3" fill="#374151"/>
+        <g class="t" fill="#bae6fd" text-anchor="end">
+          <text x="110" y="91">3V3</text>
+          <text x="110" y="117">GND</text>
+        </g>
+
+        <rect x="280" y="130" width="14" height="14" rx="3" fill="#ea580c"/>
+        <text x="302" y="141" class="t" fill="#bae6fd">GPIO3</text>
+
+        <rect x="20" y="70" width="76" height="90" rx="8" fill="#fff7ed" stroke="#ea580c"/>
+        <text x="58" y="92" class="h" fill="#9a3412" text-anchor="middle">TTP223</text>
+        <g class="t" fill="#c2410c" text-anchor="middle">
+          <text x="58" y="112">VCC</text>
+          <text x="58" y="128">GND</text>
+          <text x="58" y="144">OUT</text>
+        </g>
+
+        <path class="w" stroke="#dc2626" d="M96 87 H106 V87 H116"/>
+        <path class="w" stroke="#374151" d="M96 135 H102 V113 H116"/>
+        <path class="w" stroke="#ea580c" d="M96 149 H92 V137 H280"/>
+      </svg>
+      <p style="font-size:12px;color:#6b7280;margin:8px 0 0;">
+        GPIO3 is a normal GPIO on the C3 and is also an ADC1 pin, so it can do more if you need it to.
+      </p>
+    </div>
+
+  </div>
+
+  <h2>3. Sketch pins</h2>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Normal DevKit</h3>
+      <pre>#define TOUCH_PIN 32
+
+pinMode(TOUCH_PIN, INPUT);
+digitalRead(TOUCH_PIN);   // HIGH = touched</pre>
+    </div>
+    <div class="panel">
+      <h3>ESP32 Mini / C3</h3>
+      <pre>#define TOUCH_PIN 3
+
+pinMode(TOUCH_PIN, INPUT);
+digitalRead(TOUCH_PIN);   // HIGH = touched</pre>
+    </div>
+  </div>
+
+  <h2>4. Toggle vs momentary</h2>
+  <table>
+    <tr><th>Bridge pad</th><th>Behaviour</th><th>Use when</th></tr>
+    <tr><td><b>A</b> (default)</td><td>OUT goes LOW when touched</td><td>one wire, simplest</td></tr>
+    <tr><td><b>B</b></td><td>OUT stays HIGH, pulses LOW when touched</td><td>cleaner pulse detection</td></tr>
+    <tr><td><b>T</b> / as jumper</td><td>toggles state on each touch</td><td>on/off petting toggle</td></tr>
+  </table>
+  <p style="font-size:12.5px;color:#6b7280;">
+    The solder bridge next to the pad selects this. The default <b>A</b> position is what the table
+    above assumes.
+  </p>
+
+  <h2>5. Sensitivity</h2>
+  <p>Touching the bare PCB pad is unreliable. Glue the sensor to the <b>inside of the top wall</b> so
+     the pad faces the plastic, then touch the outside of the housing. Keep the sensor
+     <b>2&ndash;3 mm</b> away from any metal or wire and solder blob &mdash; those act as antennas
+     and make it fire on its own.</p>
+
+  <div class="note warn">
+    <b>Watch out.</b>
+    <ul style="margin:6px 0 0;padding-left:20px;">
+      <li>If OUT reads HIGH permanently with nothing touching it, the pad is too close to ground, a
+        wire, or the USB cable. Move it.</li>
+      <li>The touch pad and the ToF sensor can both react to the same hand movement. Debounce the
+        touch input so one stroke does not trigger twice.</li>
+      <li>Do not mount the sensor directly against the ESP32 board &mdash; the regulator switching
+        noise will trigger it.</li>
+    </ul>
+  </div>
+
+  <div class="note ok">
+    <b>Test.</b> Flash a sketch printing <code>digitalRead(TOUCH_PIN)</code> and touch the pad. The
+    value should flip cleanly, and return to rest when you let go.
+  </div>
+
+  <h2>6. Related pages</h2>
+  <table>
+    <tr><th>Page</th><th>Why</th></tr>
+    <tr><td><a href="component-tof.html">VL53L0X ToF</a></td><td>the other way the pet senses a hand</td></tr>
+    <tr><td><a href="index.html">Overview</a></td><td>full pin map for both boards</td></tr>
+  </table>
+
+</div>
+</body>
+</html>

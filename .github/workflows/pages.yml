@@ -3,7 +3,7 @@ name: Deploy Pages
 on:
   push:
     branches:
-      - feature/esp32-schematics
+      - main
   workflow_dispatch:
 
 permissions:

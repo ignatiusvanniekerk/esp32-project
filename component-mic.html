@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MAX4466 Microphone &mdash; Desk Buddy Schematics</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="page">
+
+  <a class="back" href="index.html">&larr; All components</a>
+
+  <div class="nav">
+    <a href="component-oled.html">SSD1306 OLED</a>
+    <a href="component-tof.html">VL53L0X ToF</a>
+    <a href="component-mic.html" class="active">MAX4466 Mic</a>
+    <a href="component-touch.html">TTP223 Touch</a>
+    <a href="component-amp.html">HXJ8002 Amp</a>
+    <a href="component-motor.html">Motor + BC337</a>
+    <a href="index.html">Overview</a>
+  </div>
+
+  <h1>MAX4466 microphone</h1>
+  <p class="sub">Analog mic amplifier &mdash; 3 wires &middot; hears claps and voice &middot; output goes to an <b>input-only</b> pin</p>
+
+  <div class="note">
+    <b>What it is.</b> An electret microphone with a small amplifier built in. The MAX4466 boosts the
+    tiny analog signal from the mic capsule up to a 0&ndash;3.3V swing the ESP32 can read on an ADC
+    pin, which is how the pet notices claps or speech.
+  </div>
+
+  <h2>1. Connection table</h2>
+  <table>
+    <tr><th>Mic pin</th><th class="c">Wire colour</th><th class="c">Normal DevKit</th><th class="c">ESP32 Mini / C3</th><th>Notes</th></tr>
+    <tr><td><b>VCC</b></td><td class="c"><span class="chip r">RED</span></td><td class="c">3V3</td><td class="c">3V3</td><td>works from 3V3 or 5V; 3V3 is cleaner</td></tr>
+    <tr><td><b>GND</b></td><td class="c"><span class="chip k">BLACK</span></td><td class="c">GND</td><td class="c">GND</td><td>common ground</td></tr>
+    <tr><td><b>OUT</b></td><td class="c"><span class="chip p">PURPLE</span></td><td class="c">GPIO35</td><td class="c">GPIO2</td><td>must be an <b>ADC1</b> / input-only pin</td></tr>
+  </table>
+
+  <h2>2. Diagram &mdash; pin locations</h2>
+
+  <div class="grid2">
+
+    <div class="panel">
+      <h3><span class="badge dev">DevKit</span> &mdash; GPIO35 (input only)</h3>
+      <svg viewBox="0 0 400 230" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .t { font: 11px ui-monospace, Consolas, monospace; }
+          .h { font: 600 13px -apple-system, Segoe UI, sans-serif; }
+          .w { stroke-width: 2.2; fill: none; stroke-linecap: round; }
+        </style>
+        <rect x="130" y="35" width="150" height="155" rx="10" fill="#1f2430"/>
+        <text x="205" y="57" class="h" fill="#fff" text-anchor="middle">ESP32 DevKit</text>
+
+        <rect x="116" y="80" width="14" height="14" rx="3" fill="#dc2626"/>
+        <rect x="116" y="106" width="14" height="14" rx="3" fill="#374151"/>
+        <g class="t" fill="#cbd5e1" text-anchor="end">
+          <text x="110" y="91">3V3</text>
+          <text x="110" y="117">GND</text>
+        </g>
+
+        <!-- right side, analog input -->
+        <rect x="280" y="106" width="14" height="14" rx="3" fill="#7c3aed"/>
+        <text x="302" y="117" class="t" fill="#cbd5e1">GPIO35 (input only)</text>
+
+        <!-- module -->
+        <rect x="20" y="70" width="76" height="90" rx="8" fill="#fdf2f8" stroke="#db2777"/>
+        <text x="58" y="92" class="h" fill="#9d174d" text-anchor="middle">MAX4466</text>
+        <g class="t" fill="#be185d" text-anchor="middle">
+          <text x="58" y="112">VCC</text>
+          <text x="58" y="128">GND</text>
+          <text x="58" y="144">OUT</text>
+        </g>
+
+        <path class="w" stroke="#dc2626" d="M96 87 H106 V87 H116"/>
+        <path class="w" stroke="#374151" d="M96 135 H102 V113 H116"/>
+        <path class="w" stroke="#7c3aed" d="M96 149 H94 V113 H280"/>
+      </svg>
+      <p style="font-size:12px;color:#6b7280;margin:8px 0 0;">
+        GPIO35 is on the <b>right</b> row and is <b>input-only</b> &mdash; it can read the mic but can
+        never be used as an output. That is exactly what we want here.
+      </p>
+    </div>
+
+    <div class="panel">
+      <h3><span class="badge mini">Mini / C3</span> &mdash; GPIO2 (ADC1)</h3>
+      <svg viewBox="0 0 400 230" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .t { font: 11px ui-monospace, Consolas, monospace; }
+          .h { font: 600 13px -apple-system, Segoe UI, sans-serif; }
+          .w { stroke-width: 2.2; fill: none; stroke-linecap: round; }
+        </style>
+        <rect x="130" y="35" width="150" height="155" rx="10" fill="#0e3a47"/>
+        <text x="205" y="57" class="h" fill="#fff" text-anchor="middle">ESP32 Mini</text>
+
+        <rect x="116" y="80" width="14" height="14" rx="3" fill="#dc2626"/>
+        <rect x="116" y="106" width="14" height="14" rx="3" fill="#374151"/>
+        <g class="t" fill="#bae6fd" text-anchor="end">
+          <text x="110" y="91">3V3</text>
+          <text x="110" y="117">GND</text>
+        </g>
+
+        <rect x="280" y="106" width="14" height="14" rx="3" fill="#7c3aed"/>
+        <text x="302" y="117" class="t" fill="#bae6fd">GPIO2 (ADC1)</text>
+
+        <rect x="20" y="70" width="76" height="90" rx="8" fill="#fdf2f8" stroke="#db2777"/>
+        <text x="58" y="92" class="h" fill="#9d174d" text-anchor="middle">MAX4466</text>
+        <g class="t" fill="#be185d" text-anchor="middle">
+          <text x="58" y="112">VCC</text>
+          <text x="58" y="128">GND</text>
+          <text x="58" y="144">OUT</text>
+        </g>
+
+        <path class="w" stroke="#dc2626" d="M96 87 H106 V87 H116"/>
+        <path class="w" stroke="#374151" d="M96 135 H102 V113 H116"/>
+        <path class="w" stroke="#7c3aed" d="M96 149 H94 V113 H280"/>
+      </svg>
+      <p style="font-size:12px;color:#6b7280;margin:8px 0 0;">
+        On the C3 the ADC pins are <b>ADC1</b> = GPIO0&ndash;GPIO4. Stay off <b>ADC2</b>
+        (GPIO5) &mdash; WiFi uses it and readings there are unreliable.
+      </p>
+    </div>
+
+  </div>
+
+  <h2>3. Sketch pins</h2>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Normal DevKit</h3>
+      <pre>#define MIC_PIN 35
+
+analogRead(MIC_PIN);   // 0 .. 4095</pre>
+    </div>
+    <div class="panel">
+      <h3>ESP32 Mini / C3</h3>
+      <pre>#define MIC_PIN 2
+
+analogRead(MIC_PIN);   // 0 .. 4095</pre>
+    </div>
+  </div>
+
+  <h2>4. Gain trim</h2>
+  <p>The MAX4466 has a small onboard trimmer (blue pot with a screw slot) that sets how loud the
+     output is. With the pet quiet you will probably need to turn it <b>clockwise</b> to pick up claps
+     from further away. Turn it a little at a time &mdash; too far and it picks up motor buzz.</p>
+
+  <div class="note warn">
+    <b>Watch out.</b>
+    <ul style="margin:6px 0 0;padding-left:20px;">
+      <li>OUT must go to an <b>input-only / ADC1</b> pin. Wiring it to a strapping pin like GPIO0 or
+        GPIO2 on some boards can prevent booting.</li>
+      <li>Keep the mic wire short and away from the motor wires &mdash; motors are electrically noisy
+        and will show up as a loud hiss.</li>
+      <li>Read the baseline first (pet sitting quiet), then trigger a reaction when the value jumps
+        well above it. A fixed threshold is noisy.</li>
+    </ul>
+  </div>
+
+  <div class="note ok">
+    <b>Test.</b> Flash a sketch that prints <code>analogRead(MIC_PIN)</code> to the Serial Monitor and
+    clap once. The number should spike and settle back down.
+  </div>
+
+  <h2>5. Related pages</h2>
+  <table>
+    <tr><th>Page</th><th>Why</th></tr>
+    <tr><td><a href="component-motor.html">Motor + BC337</a></td><td>the main source of electrical noise</td></tr>
+    <tr><td><a href="index.html">Overview</a></td><td>full pin map for both boards</td></tr>
+  </table>
+
+</div>
+</body>
+</html>
