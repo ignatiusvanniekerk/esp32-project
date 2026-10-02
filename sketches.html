@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arduino Sketches &mdash; Desk Buddy</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="page">
+
+  <div class="nav">
+    <a href="index.html">Overview</a>
+    <a href="schematics.html">Full schematics</a>
+    <a href="component-oled.html">OLED</a>
+    <a href="component-tof.html">ToF</a>
+    <a href="component-mic.html">Mic</a>
+    <a href="component-touch.html">Touch</a>
+    <a href="component-amp.html">Amp</a>
+    <a href="component-motor.html">Motor</a>
+    <a href="sketches.html" class="active">Sketches</a>
+    <a href="housing.html">Housing</a>
+    <a href="downloads.html">Downloads</a>
+  </div>
+
+  <h1>Arduino sketches</h1>
+  <p class="sub">Upload these in build order &mdash; each one adds one module and tests it before the next.
+     Folder name must match the <code>.ino</code> name inside it.</p>
+
+  <div class="note">
+    <b>How to upload.</b> Open the <code>.ino</code> in the Arduino IDE, pick your board
+    (<b>esp32</b> for the normal DevKit, <b>esp32c3</b> for the Mini), connect USB, and press Upload.
+    Watch the <b>Serial Monitor</b> at 115200 baud to confirm each step works.
+  </div>
+
+  <h2>1. Build order</h2>
+  <table>
+    <tr><th class="c">#</th><th>Sketch</th><th>Adds / tests</th><th>Pins used</th></tr>
+    <tr>
+      <td class="c">1</td>
+      <td><b>DeskPet_OLED</b><br><span style="font-size:12px;">
+        <a href="sketches/DeskPet_OLED/DeskPet_OLED.ino">DeskPet_OLED.ino</a></span></td>
+      <td>OLED display only</td>
+      <td><span class="chip g">SDA 21</span> <span class="chip b">SCL 22</span></td>
+    </tr>
+    <tr>
+      <td class="c">2</td>
+      <td><b>DeskPet_ToF</b><br><span style="font-size:12px;">
+        <a href="sketches/DeskPet_ToF/DeskPet_ToF.ino">DeskPet_ToF.ino</a></span></td>
+      <td>VL53L0X distance sensor alone</td>
+      <td><span class="chip g">SDA 21</span> <span class="chip b">SCL 22</span></td>
+    </tr>
+    <tr>
+      <td class="c">3</td>
+      <td><b>DeskPet_OLED_ToF</b><br><span style="font-size:12px;">
+        <a href="sketches/DeskPet_OLED_ToF/DeskPet_OLED_ToF.ino">DeskPet_OLED_ToF.ino</a></span></td>
+      <td>OLED + ToF + mic + touch reacting</td>
+      <td><span class="chip g">21</span> <span class="chip b">22</span>
+          <span class="chip p">35</span> <span class="chip o">32</span></td>
+    </tr>
+    <tr>
+      <td class="c">4</td>
+      <td><b>DeskPet_Emotion</b><br><span style="font-size:12px;">
+        <a href="sketches/DeskPet_Emotion/DeskPet_Emotion.ino">DeskPet_Emotion.ino</a></span></td>
+      <td>Emotion state machine &mdash; moods on the face</td>
+      <td><span class="chip p">35</span> <span class="chip o">32</span>
+          <span class="chip y">27</span></td>
+    </tr>
+    <tr>
+      <td class="c">5</td>
+      <td><b>deskpet</b> (main)<br><span style="font-size:12px;">
+        <a href="sketches/deskpet/deskpet.ino">deskpet.ino</a> &middot;
+        <a href="sketches/deskpet/Eye.h">Eye.h</a></span></td>
+      <td>Full pet &mdash; eyes, moods, purring motor, touch, mic</td>
+      <td><span class="chip g">21</span> <span class="chip b">22</span>
+          <span class="chip p">35</span> <span class="chip o">32</span>
+          <span class="chip y">27</span> <span class="chip c">25</span></td>
+    </tr>
+  </table>
+
+  <h2>2. Pin defines at a glance</h2>
+  <p>Every sketch uses the same pin numbers, so you wire once and never rewire:</p>
+  <table>
+    <tr><th>Define</th><th class="c">DevKit value</th><th>Used by</th></tr>
+    <tr><td><code>SDA_PIN</code></td><td class="c">21</td><td>OLED, ToF</td></tr>
+    <tr><td><code>SCL_PIN</code></td><td class="c">22</td><td>OLED, ToF</td></tr>
+    <tr><td><code>MIC_PIN</code></td><td class="c">35</td><td>clap / voice detection</td></tr>
+    <tr><td><code>TOUCH_PIN</code></td><td class="c">32</td><td>petting the top</td></tr>
+    <tr><td><code>MOTOR_PIN</code></td><td class="c">27</td><td>purring / nodding</td></tr>
+    <tr><td><code>SPK_PIN</code></td><td class="c">25</td><td>audio (DAC, main sketch only)</td></tr>
+  </table>
+
+  <div class="note warn">
+    <b>ESP32 Mini / C3 users:</b> the sketches target the normal DevKit. To use a C3 board, change the
+    defines to <code>SDA_PIN 8</code>, <code>SCL_PIN 9</code>, <code>MIC_PIN 2</code>,
+    <code>TOUCH_PIN 3</code>, <code>MOTOR_PIN 7</code>, <code>SPK_PIN 6</code>, and select the
+    <b>esp32c3</b> board. Note GPIO6 on the C3 is PWM-only (no DAC), so audio is a square wave.
+    See the <a href="component-amp.html">amp page</a> for details.
+  </div>
+
+  <h2>3. Tuneable constants</h2>
+  <p>The main sketch exposes thresholds at the top of the file so you can match it to your room
+     without hunting through the code:</p>
+  <table>
+    <tr><th>Constant</th><th class="c">Default</th><th>What it does</th></tr>
+    <tr><td><code>MIC_MIN_TRIGGER_DELTA</code></td><td class="c">250</td><td>clap threshold &mdash; raise if it triggers on speech</td></tr>
+    <tr><td><code>MIC_COOLDOWN_MS</code></td><td class="c">2500</td><td>wait after a clap before reacting again</td></tr>
+    <tr><td><code>MIC_SPEAKER_BLANK_MS</code></td><td class="c">800</td><td>ignore the mic while the speaker plays</td></tr>
+    <tr><td><code>MIC_BASELINE_TRACKING</code></td><td class="c">0.01f</td><td>how fast the quiet background level is learned</td></tr>
+    <tr><td><code>TOUCH_MOOD_MS</code></td><td class="c">2600</td><td>how long a petting stroke changes the mood</td></tr>
+    <tr><td><code>MOTOR_PURR_DUTY</code></td><td class="c">70</td><td>motor speed when purring (of 255)</td></tr>
+    <tr><td><code>MOTOR_PWM_HZ</code></td><td class="c">20000</td><td>above hearing &mdash; a healthy motor whine</td></tr>
+  </table>
+
+  <h2>4. Troubleshooting</h2>
+  <table>
+    <tr><th>Symptom</th><th>Likely cause</th></tr>
+    <tr><td>Nothing on the OLED</td><td>SDA/SCL swapped, or 5V accidentally on VCC</td></tr>
+    <tr><td>ToF reads 0 always</td><td>XSHUT not tied to 3V3, or board not found on I2C</td></tr>
+    <tr><td>Pet reacts to its own voice</td><td>lower <code>MIC_SPEAKER_BLANK_MS</code> / raise <code>MIC_MIN_TRIGGER_DELTA</code></td></tr>
+    <tr><td>ESP32 resets when motor starts</td><td>add 100&nbsp;&micro;F decoupling across the motor; check the flyback diode</td></tr>
+    <tr><td>Touch always HIGH</td><td>sensor too close to ground/wire, or no pull-up</td></tr>
+    <tr><td>Upload fails / board not found</td><td>hold BOOT while plugging USB in</td></tr>
+  </table>
+
+  <h2>5. Other downloads</h2>
+  <table>
+    <tr><th>Link</th><th>What</th></tr>
+    <tr><td><a href="downloads.html">All project files</a></td><td>housing STLs, build guide, wiring plan</td></tr>
+    <tr><td><a href="housing.html">Housing</a></td><td>3D-print files and the parametric generator</td></tr>
+  </table>
+
+</div>
+</body>
+</html>

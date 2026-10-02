@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desk Buddy — Wiring Plan</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color: #1f2430; font-size: 14px; line-height: 1.5; background: #f4f5fa;
+  }
+  .page { max-width: 860px; margin: 0 auto; padding: 28px 32px; }
+  h1 { font-size: 25px; margin: 0 0 2px; }
+  .sub { color: #6b7280; font-size: 12.5px; }
+  h2 { font-size: 16px; margin: 30px 0 10px; padding-bottom: 4px; border-bottom: 2px solid #4f46e5; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+  th, td { text-align: left; padding: 7px 9px; border: 1px solid #e2e6ee; vertical-align: top; }
+  th { background: #eef0ff; font-size: 11.5px; text-transform: uppercase; letter-spacing: .03em; }
+  .qty, .c { text-align: center; }
+  .chip { display: inline-block; border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 600; color: #fff; font-family: ui-monospace, Consolas, monospace; }
+  .chip.g { background: #16a34a; } .chip.b { background: #2563eb; } .chip.r { background: #dc2626; }
+  .chip.k { background: #374151; } .chip.m { background: #db2777; } .chip.p { background: #7c3aed; }
+  .chip.o { background: #ea580c; } .chip.c { background: #0891b2; } .chip.y { background: #ca8a04; }
+  .note { background: #eef0ff; border-left: 4px solid #4f46e5; padding: 8px 12px; border-radius: 6px; margin: 10px 0; }
+  .warn-note { background: #fff7ed; border-left-color: #ea580c; }
+  .ok-note { background: #ecfdf5; border-left-color: #16a34a; }
+  pre { background: #1f2430; color: #eef0ff; border-radius: 8px; padding: 12px 14px; font-size: 12.5px; overflow-x: auto; line-height: 1.45; }
+  code { background: #f3f4f6; border-radius: 4px; padding: 1px 5px; font-size: 12.5px; }
+  .board { display: flex; gap: 14px; flex-wrap: wrap; }
+  .box { border: 1px solid #e2e6ee; border-radius: 10px; padding: 10px 12px; background: #fff; }
+  .box h3 { margin: 0 0 8px; font-size: 13px; }
+  .box .pins { display: flex; flex-direction: column; gap: 5px; }
+  .line { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12.5px; }
+  .pcap { color: #6b7280; font-size: 12px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  @media print { body { background: #fff; } .page { max-width: none; padding: 10px; } .box { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>Desk Buddy &mdash; Wiring Plan</h1>
+  <p class="sub">Plain ESP32 + external OLED &middot; battery mode excluded &mdash; powered by USB 5 V &middot; one thing at a time</p>
+
+  <h2>1. What &amp; where it goes</h2>
+  <table>
+    <tr><th>Wire</th><th class="c">From …</th><th class="c">To …</th><th>Signal chip</th></tr>
+    <tr><td>OLED power</td><td class="c">3V3</td><td class="c">OLED VCC</td><td><span class="chip r">RED&nbsp;3V3</span></td></tr>
+    <tr><td>OLED data</td><td class="c">OLED SDA</td><td class="c">ESP32 GPIO21</td><td><span class="chip g">GREEN&nbsp;SDA</span></td></tr>
+    <tr><td>OLED clock</td><td class="c">OLED SCL</td><td class="c">ESP32 GPIO22</td><td><span class="chip b">BLUE&nbsp;SCL</span></td></tr>
+    <tr><td>Common ground</td><td class="c">GND</td><td class="c">all modules</td><td><span class="chip k">BLACK&nbsp;GND</span></td></tr>
+    <tr><td>Mic (clap/voice)</td><td class="c">MAX4466 OUT</td><td class="c">GPIO35</td><td><span class="chip p">PURPLE&nbsp;MIC&nbsp;OUT</span></td></tr>
+    <tr><td>Touch (pet/tap)</td><td class="c">TTP223 OUT</td><td class="c">GPIO32</td><td><span class="chip o">ORANGE&nbsp;TOUCH</span></td></tr>
+    <tr><td>Audio signal</td><td class="c">GPIO25 (DAC)</td><td class="c">HXJ8002 L</td><td><span class="chip c">CYAN&nbsp;AUDIO</span></td></tr>
+    <tr><td>Motor control (PWM)</td><td class="c">GPIO27</td><td class="c">BC337 base (via 1&nbsp;k&Omega;)</td><td><span class="chip y">YELLOW&nbsp;PWM</span></td></tr>
+    <tr><td>Motor power</td><td class="c">3V3</td><td class="c">motor &plus;</td><td><span class="chip r">RED&nbsp;3V3</span></td></tr>
+    <tr><td>Speaker</td><td class="c">HXJ8002 V2 (+) / V1 (&minus;)</td><td class="c">40&nbsp;mm 8&nbsp;&Omega;</td><td><span class="chip c">CYAN&nbsp;SPK</span></td></tr>
+    <tr><td>LEDs (optional)</td><td class="c">GPIO4 / GPIO16</td><td class="c">LED via 220&nbsp;&Omega; &rarr; GND</td><td><span class="chip m">PINK&nbsp;LED</span></td></tr>
+  </table>
+
+  <h2>2. Full wiring diagram</h2>
+
+  <pre><b>                    ESP32 DevKit  (USB 5 V in)</b>
+  <span class="chip r">3V3</span> ────┬───────────┬───────────┬──────────┬─────────────┐
+        │           │           │          │             │
+    <span class="chip g">GPIO21 SDA</span>      <span class="chip p">GPIO35</span>    <span class="chip k">GND</span>──────┬──────┬──────┬──────┬──────┐
+        │           │           │       │          │     │      │      │      │
+    <span class="chip b">GPIO22 SCL</span>   <span class="chip y">GPIO27</span>     │       │          │     │      │      │      │
+        │           │           │       │          │     │      │      │      │
+        │           │       <span class="chip y">1&nbsp;k&Omega;</span>       │          │     │      │      │      │
+        │           │        │        │          │     │      │      │      │
+        │      <span class="chip o">GPIO32</span>        │     <span class="chip k">GND</span>      │     │      │      │      │
+        │           │        │        │          │     │      │      │      │
+        │      <span class="chip c">GPIO25</span>    ┌─┴─┐      │       <span class="chip k">GND</span>  <span class="chip k">GND</span>  <span class="chip k">GND</span>  <span class="chip k">GND</span>
+        └─┐         │   │     ├───┐    │─      ──┬── ──┬── ──┬── ──┬──
+          │         │   │     │   │    │        │     │     │     │
+      <span class="chip g">SDA</span><span class="chip b">SCL</span>  <span class="chip m">GPIO4/16</span>  │   │   <span class="chip r">3V3</span>   <span class="chip k">GND</span>  <span class="chip c">5V</span>   <span class="chip k">GND</span>
+      <span class="chip g">│</span>  <span class="chip b">│</span>        │   │  ┌─┴──┐ ┌┴──┐  │     │
+   ┌──┤  ┤──┐    │   │  │BC337││MAX4466│  │HXJ8002│
+   │  │  │  │    │   │  └─┬──┘ └┬─────┘  └──┬────┘
+   │ OLED │  │    │   │    │     │             │
+   │      │  │    │   │  emitter     OUT→<span class="chip p">GPIO35</span>    L←<span class="chip c">GPIO25</span>
+  GND VDD SDA SCK  │   │  →GND                 V2 (+) / V1 (&minus;) → 40mm 8Ω speaker
+   (3V3)     ↑    │   └─ collector ← motor(−) ← 1N4007 ← motor(+) ← <span class="chip r">3V3</span>
+           TTP223 OUT→<span class="chip o">GPIO32</span>
+   VCC←<span class="chip r">3V3</span>  GND←<span class="chip k">GND</span>   (VDD=3V3)</pre>
+
+  <h3>Per-pin terminal map</h3>
+  <table>
+    <tr><th>ESP32 pin</th><th>Wire color</th><th>Goes to</th><th>Notes</th></tr>
+     <tr><td><code>GPIO21</code></td><td><span class="chip g">GREEN</span></td><td>OLED SDA</td><td>I²C data</td></tr>
+     <tr><td><code>GPIO22</code></td><td><span class="chip b">BLUE</span></td><td>OLED SCK</td><td>I²C clock</td></tr>
+    <tr><td><code>GPIO35</code></td><td><span class="chip p">PURPLE</span></td><td>MAX4466 OUT</td><td>ADC input (input-only pin)</td></tr>
+    <tr><td><code>GPIO32</code></td><td><span class="chip o">ORANGE</span></td><td>TTP223 OUT</td><td>digital touch input</td></tr>
+    <tr><td><code>GPIO27</code></td><td><span class="chip y">YELLOW</span></td><td>BC337 base via 1&nbsp;k&Omega;</td><td>PWM motor control</td></tr>
+    <tr><td><code>GPIO25</code></td><td><span class="chip c">CYAN</span></td><td>HXJ8002 L</td><td>DAC audio out</td></tr>
+    <tr><td><code>GPIO4 / GPIO16</code></td><td><span class="chip m">PINK</span></td><td>LED anode via 220&nbsp;&Omega;</td><td>optional</td></tr>
+     <tr><td><code>3V3</code></td><td><span class="chip r">RED</span></td><td>OLED VDD, MAX4466 VCC, TTP223 VCC, motor +</td><td>3.3 V rail</td></tr>
+    <tr><td><code>5V (VIN)</code></td><td><span class="chip r" style="background:#c2410c">ORANGE&nbsp;RED</span></td><td>HXJ8002 VDD</td><td>amp needs the headroom</td></tr>
+    <tr><td><code>GND</code></td><td><span class="chip k">BLACK</span></td><td>all module GND + transistor emitter</td><td>single common star</td></tr>
+  </table>
+
+  <h3>Modules at a glance</h3>
+  <div class="board">
+    <div class="box">
+       <h3>I2C bus (OLED)</h3>
+       <div class="pins">
+         <div class="line"><b>SSD1306 OLED</b> <span class="chip r">VDD&larr;3V3</span> <span class="chip k">GND</span></div>
+         <div class="line"><span class="chip g">SDA&harr;GPIO21</span> <span class="chip b">SCK&harr;GPIO22</span></div>
+       </div>
+    </div>
+
+    <div class="box">
+      <h3>Sensor inputs</h3>
+      <div class="pins">
+        <div class="line"><b>MAX4466</b> <span class="chip r">VCC&larr;3V3</span> <span class="chip k">GND</span> <span class="chip p">OUT&rarr;GPIO35</span></div>
+        <div class="line"><b>TTP223</b> <span class="chip r">VCC&larr;3V3</span> <span class="chip k">GND</span> <span class="chip o">OUT&rarr;GPIO32</span></div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h3>Sound + speaker</h3>
+      <div class="pins">
+        <div class="line"><b>HXJ8002</b> <span class="chip r">VDD&larr;5V</span> <span class="chip k">GND</span> <span class="chip c">L&larr;GPIO25</span></div>
+        <div class="line"><b>40 mm 8 &Omega;</b> <span class="chip c">V2 (+)</span> <span class="chip c">V1 (&minus;)</span> &harr; amp out</div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h3>Motor driver</h3>
+      <div class="pins">
+        <div class="line"><b>Vibration motor</b> <span class="chip r">&plus;&larr;3V3</span> <span class="chip k">&minus;&rarr;collector</span></div>
+        <div class="line"><span class="chip k">1N4007</span> <span class="pcap">stripe &rarr; 3V3, across motor</span></div>
+        <div class="line"><b>BC337</b> <span class="chip y">B&larr;1k&larr;GPIO27</span> <span class="chip k">E&rarr;GND</span></div>
+        <div class="line"><span class="chip k">10k</span> <span class="pcap">base&ndash;GND, holds off at boot</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h2>3. Power notes</h2>
+  <pre>USB 5 V &rarr; ESP32 VIN (5 V)
+ESP32 on-board LDO &rarr; 3V3 rail (sensors, OLED, motor)
+5 V rail &rarr; HXJ8002 VDD (amplifier needs the headroom)
+GND is common to every module  &mdash;  single black star to the ESP32 GND</pre>
+  <div class="ok-note note"><b>Why 3V3 for the vibration motor:</b> the 1027 D03A is a 3&nbsp;V coin-style motor; driving it from 3&nbsp;V3 keeps spin speed sane and current below the LDO limit. The 1N4007 plus the BC337 protects GPIO27 from back-EMF spikes.</div>
+
+  <h2>4. Code first-lines</h2>
+  <pre>Wire.begin(21, 22);                 // I2C: OLED
+  pinMode(32, INPUT);                  // TTP223 touch input
+  U8g2 oled(U8G2_R0, U8X8_PIN_NONE);   // or Adafruit_SSD1306
+  ledcSetup(0, 5000, 8); ledcAttachPin(27, 0);   // motor PWM
+  analogRead(35);                      // mic envelope
+  ledcWriteTone(0, 0);                 // HXJ8002 L on GPIO25 via dacWrite(25, …)</pre>
+
+  <h2>5. Build order (one at a time)</h2>
+  <table>
+    <tr><th>Step</th><th>Thing</th><th>Proves</th></tr>
+     <tr><td class="c">1</td><td>OLED hello&nbsp;world</td><td>board, I2C, display &mdash; the face</td></tr>
+     <tr><td class="c">2</td><td>TTP223 tap/pet</td><td>digital input on GPIO32</td></tr>
+     <tr><td class="c">3</td><td>MAX4466 mic level</td><td>ADC on GPIO35</td></tr>
+     <tr><td class="c">4</td><td>Motor driver &amp; 1N4007</td><td>transistor + PWM</td></tr>
+     <tr><td class="c">5</td><td>HXJ8002 + speaker</td><td>DAC audio</td></tr>
+     <tr><td class="c">6</td><td>Pet logic &mdash; all together</td><td>mood state machine</td></tr>
+  </table>
+
+  <div class="warn-note note"><b>Caveats:</b> GPIO35 is input-only (fine for the mic). Feed the TTP223 at <b>3V3</b>, not 5&nbsp;V, so its output can never exceed the ESP32&rsquo;s 3.3&nbsp;V logic. DAC (GPIO25) gives ~0&ndash;3.3&nbsp;V into the HXJ8002&rsquo;s DC-coupled input &mdash; start with a small amplitude.</div>
+
+</div>
+</body>
+</html>
