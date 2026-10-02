@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Downloads &mdash; Desk Buddy</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="page">
+
+  <div class="nav">
+    <a href="index.html">Overview</a>
+    <a href="schematics.html">Full schematics</a>
+    <a href="component-oled.html">OLED</a>
+    <a href="component-tof.html">ToF</a>
+    <a href="component-mic.html">Mic</a>
+    <a href="component-touch.html">Touch</a>
+    <a href="component-amp.html">Amp</a>
+    <a href="component-motor.html">Motor</a>
+    <a href="sketches.html">Sketches</a>
+    <a href="housing.html">Housing</a>
+    <a href="downloads.html" class="active">Downloads</a>
+  </div>
+
+  <h1>Downloads</h1>
+  <p class="sub">Everything in one place &mdash; firmware, 3D-print files and documentation.</p>
+
+  <h2>Firmware</h2>
+  <table>
+    <tr><th>Sketch</th><th>File</th></tr>
+    <tr><td>Main pet (use this one)</td><td><a href="sketches/deskpet/deskpet.ino">deskpet.ino</a> &middot; <a href="sketches/deskpet/Eye.h">Eye.h</a></td></tr>
+    <tr><td>OLED only (step 1)</td><td><a href="sketches/DeskPet_OLED/DeskPet_OLED.ino">DeskPet_OLED.ino</a></td></tr>
+    <tr><td>ToF only (step 2)</td><td><a href="sketches/DeskPet_ToF/DeskPet_ToF.ino">DeskPet_ToF.ino</a></td></tr>
+    <tr><td>OLED + ToF + mic + touch (step 3)</td><td><a href="sketches/DeskPet_OLED_ToF/DeskPet_OLED_ToF.ino">DeskPet_OLED_ToF.ino</a></td></tr>
+    <tr><td>Emotion state machine (step 4)</td><td><a href="sketches/DeskPet_Emotion/DeskPet_Emotion.ino">DeskPet_Emotion.ino</a></td></tr>
+  </table>
+  <p style="font-size:12.5px;"><a href="sketches.html">Sketch guide &rarr;</a></p>
+
+  <h2>3D-print files</h2>
+  <table>
+    <tr><th>File</th><th class="c">Size</th><th>What</th></tr>
+    <tr><td><a href="housing/deskpet_housing_back.stl">deskpet_housing_back.stl</a></td><td class="c">839 KB</td><td>Housing tray</td></tr>
+    <tr><td><a href="housing/deskpet_housing_front.stl">deskpet_housing_front.stl</a></td><td class="c">104 KB</td><td>Front panel</td></tr>
+    <tr><td><a href="housing/generate_housing.py">generate_housing.py</a></td><td class="c">7 KB</td><td>Parametric generator source</td></tr>
+  </table>
+  <p style="font-size:12.5px;"><a href="housing.html">Housing guide &rarr;</a></p>
+
+  <h2>Documentation</h2>
+  <table>
+    <tr><th>File</th><th>What</th></tr>
+    <tr><td><a href="docs/desk-pet-build-guide.pdf">desk-pet-build-guide.pdf</a> <span class="chip y">PDF</span></td><td>Full illustrated build guide &mdash; 129 pages</td></tr>
+    <tr><td><a href="docs/desk-pet-build-guide.html">desk-pet-build-guide.html</a></td><td>Same guide, browsable in a browser</td></tr>
+    <tr><td><a href="docs/wiring-plan.html">wiring-plan.html</a></td><td>Complete wiring reference with pin tables</td></tr>
+    <tr><td><a href="docs/desk-buddy-face.html">desk-buddy-face.html</a></td><td>Animated face preview &mdash; what it looks like awake</td></tr>
+    <tr><td><a href="schematics.html">schematics.html</a></td><td>Combined DevKit + C3 schematics on one page</td></tr>
+  </table>
+
+  <h2>Shopping list</h2>
+  <table>
+    <tr><th>Item</th><th class="c">Qty</th><th>Spec</th><th>Page</th></tr>
+    <tr><td>ESP32 DevKit</td><td class="c">1</td><td>30 or 38 pin, or ESP32-C3 Mini</td><td><a href="schematics.html">Schematics</a></td></tr>
+    <tr><td>SSD1306 OLED</td><td class="c">1</td><td>128&times;64, I2C, 4 wires</td><td><a href="component-oled.html">OLED</a></td></tr>
+    <tr><td>VL53L0X ToF</td><td class="c">1</td><td>I2C, shares the OLED bus</td><td><a href="component-tof.html">ToF</a></td></tr>
+    <tr><td>MAX4466 mic</td><td class="c">1</td><td>electret + op-amp</td><td><a href="component-mic.html">Mic</a></td></tr>
+    <tr><td>TTP223 touch</td><td class="c">1</td><td>toggle or momentary</td><td><a href="component-touch.html">Touch</a></td></tr>
+    <tr><td>HXJ8002 amp</td><td class="c">1</td><td>3 W digital class-D, 5 V</td><td><a href="component-amp.html">Amp</a></td></tr>
+    <tr><td>BC337 transistor</td><td class="c">1</td><td>TO-92, NPN</td><td><a href="component-motor.html">Motor</a></td></tr>
+    <tr><td>M3 screws</td><td class="c">4</td><td>10&ndash;12 mm for the panel</td><td><a href="housing.html">Housing</a></td></tr>
+    <tr><td>PLA / PETG filament</td><td class="c">&mdash;</td><td>~60 g</td><td><a href="housing.html">Housing</a></td></tr>
+  </table>
+
+  <h2>Not listed yet</h2>
+  <p>The small passives &mdash; the 1&nbsp;k&Omega; base resistor, the 1N4148 flyback diode and the
+     100&nbsp;&micro;F bulk capacitor &mdash; are covered on the
+     <a href="component-motor.html">motor</a> and <a href="component-amp.html">amp</a> pages.</p>
+
+</div>
+</body>
+</html>

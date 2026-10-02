@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Housing &mdash; Desk Buddy</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="page">
+
+  <div class="nav">
+    <a href="index.html">Overview</a>
+    <a href="schematics.html">Full schematics</a>
+    <a href="component-oled.html">OLED</a>
+    <a href="component-tof.html">ToF</a>
+    <a href="component-mic.html">Mic</a>
+    <a href="component-touch.html">Touch</a>
+    <a href="component-amp.html">Amp</a>
+    <a href="component-motor.html">Motor</a>
+    <a href="sketches.html">Sketches</a>
+    <a href="housing.html" class="active">Housing</a>
+    <a href="downloads.html">Downloads</a>
+  </div>
+
+  <h1>Housing</h1>
+  <p class="sub">Two-part rounded shell, printed flat and screwed together. Everything is generated
+     from one parametric script, so any dimension can be changed and re-exported.</p>
+
+  <h2>Print files</h2>
+  <table>
+    <tr><th>File</th><th class="c">Size</th><th>Notes</th></tr>
+    <tr>
+      <td><a href="housing/deskpet_housing_back.stl">deskpet_housing_back.stl</a></td>
+      <td class="c">839 KB</td>
+      <td>Main body &mdash; open at the front</td>
+    </tr>
+    <tr>
+      <td><a href="housing/deskpet_housing_front.stl">deskpet_housing_front.stl</a></td>
+      <td class="c">104 KB</td>
+      <td>Front panel &mdash; windowed, screw holes</td>
+    </tr>
+    <tr>
+      <td><a href="housing/generate_housing.py">generate_housing.py</a></td>
+      <td class="c">7 KB</td>
+      <td>Parametric source &mdash; edit and re-run to resize</td>
+    </tr>
+  </table>
+
+  <h2>Dimensions</h2>
+  <table>
+    <tr><th>Parameter</th><th class="c">Value</th><th>What it is</th></tr>
+    <tr><td>Outer size</td><td class="c">66 &times; 64 &times; 36 mm</td><td>W &times; H &times; D of the assembled shell</td></tr>
+    <tr><td>Wall thickness</td><td class="c">2.5 mm</td><td>all walls &mdash; strong enough to screw together</td></tr>
+    <tr><td>Corner radius</td><td class="c">8 mm</td><td>uniform on every edge, so no seam to hide</td></tr>
+    <tr><td>Front panel</td><td class="c">66 &times; 64 &times; 2.5 mm</td><td>mates flush with the tray rim</td></tr>
+    <tr><td>Inner cavity</td><td class="c">61 &times; 59 &times; 31 mm</td><td>uniform &mdash; no draft, no ledge</td></tr>
+  </table>
+
+  <div class="note">
+    The inner cavity is a single uniform box, so the panel drops straight onto the rim from the
+    front. There is no lip to align and nothing to reach past &mdash; the two parts are held by the
+    four M3 screws alone.
+  </div>
+
+  <h2>Cutouts</h2>
+  <table>
+    <tr><th>Feature</th><th class="c">Position (x, y)</th><th class="c">Size</th><th>Page</th></tr>
+    <tr>
+      <td>OLED window</td><td class="c">(0, 2)</td><td class="c">28 &times; 18 mm</td>
+      <td><a href="component-oled.html">OLED</a></td>
+    </tr>
+    <tr>
+      <td>ToF window</td><td class="c">(0, 20)</td><td class="c">14 &times; 10 mm</td>
+      <td><a href="component-tof.html">ToF</a></td>
+    </tr>
+    <tr>
+      <td>Speaker grille</td><td class="c">rear</td><td class="c">40 mm</td>
+      <td><a href="component-amp.html">Amp</a></td>
+    </tr>
+    <tr>
+      <td>USB cable slot</td><td class="c">right wall</td><td class="c">12 &times; 14 &times; 16 mm</td>
+      <td><a href="downloads.html">Downloads</a></td>
+    </tr>
+  </table>
+
+  <h2>Mounting hardware</h2>
+  <table>
+    <tr><th>Part</th><th class="c">Count</th><th>Spec</th></tr>
+    <tr><td>Corner pillars</td><td class="c">4</td><td>at (&plusmn;22, &plusmn;22), outer radius 8 mm</td></tr>
+    <tr><td>Panel screws</td><td class="c">4</td><td>M3 into a 4 mm pilot, front to back</td></tr>
+    <tr><td>ESP32 standoffs</td><td class="c">4</td><td>at (&plusmn;21, &plusmn;12), M3 &times; 7 mm, board vertical</td></tr>
+    <tr><td>Speaker</td><td class="c">1</td><td>40 mm, adhesive-mounted to the 40 mm ring</td></tr>
+  </table>
+
+  <h3>ESP32 orientation</h3>
+  <p>The board stands <b>vertical against the interior back wall</b>, long axis along X, so the
+     board &plusmn;28 mm of length lays flat across the back. The USB connector therefore points at
+     the <b>right-hand side wall</b>, which is where the cable slot is cut. The four M3 standoffs
+     hold it at (&plusmn;21, &plusmn;12) &mdash; 42 mm apart horizontally, matching the board's
+     mounting hole pattern.</p>
+
+  <div class="note warn">
+    <b>The cable slot is deliberately generous</b> (12 &times; 14 &times; 16 mm). It assumes a standard
+    USB-A plug and a micro-USB/USB-C pigtail ~10 mm from the connector body. If your cable is fatter,
+    open the STL in your slicer and drag that one cutout wider &mdash; you do not need to re-run
+    the script.
+  </div>
+
+  <h2>Speaker grille</h2>
+  <p>The rear is perforated with a centre hole plus three concentric rings of 3 mm holes at radii
+     6.5, 11 and 15 mm &mdash; far more open area than the original 3&times;3 dot grid, so sound
+     passes with noticeably less restriction. A 40 mm ring holds the speaker against the outside.</p>
+
+  <h2>Print settings</h2>
+  <table>
+    <tr><th>Setting</th><th>Value</th></tr>
+    <tr><td>Orientation</td><td>flat, panel face down</td></tr>
+    <tr><td>Perimeters</td><td>3</td></tr>
+    <tr><td>Top / bottom layers</td><td>4</td></tr>
+    <tr><td>Infill</td><td>15&ndash;20% gyroid</td></tr>
+    <tr><td>Supports</td><td>not needed</td></tr>
+    <tr><td>Material</td><td>PLA or PETG</td></tr>
+  </table>
+
+  <h2>Verified output</h2>
+  <table>
+    <tr><th>Part</th><th class="c">Watertight</th><th class="c">Volume (mm&sup3;)</th><th class="c">Extents (mm)</th></tr>
+    <tr><td>Tray</td><td class="c">yes</td><td class="c">47 607.9</td><td class="c">66 &times; 64 &times; 36</td></tr>
+    <tr><td>Front panel</td><td class="c">yes</td><td class="c">8 098.1</td><td class="c">66 &times; 64 &times; 2.5</td></tr>
+  </table>
+
+  <h2>Re-running the generator</h2>
+  <p>Edit the constants at the top of <code>generate_housing.py</code> and run it to re-export both
+     STLs into <code>housing/</code>. Requires Python with <code>trimesh</code>, <code>manifold3d</code>
+     and <code>shapely</code>.</p>
+
+  <div class="note warn">
+    <b>Two things that will bite you if you edit it.</b> First, <code>trimesh</code>'s
+    <code>extrude_polygon</code> always spans from <code>z = 0</code> to <code>height</code> &mdash;
+    a cut meant to sit at <code>z = 15.5</code> needs an explicit translation, or it lands at the
+    bottom of the model. Second, batch your unions and subtractions into single calls; feeding many
+    at once fails with <code>Not all meshes are volumes!</code> inside manifold.
+  </div>
+
+  <h2>Next steps</h2>
+  <p><a href="sketches.html">Upload the sketches</a> after printing, or go back to the
+     <a href="index.html">overview</a>.</p>
+
+</div>
+</body>
+</html>

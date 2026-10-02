@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Desk Pet — Build Guide &amp; Parts List</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color: #1f2430; font-size: 13px; line-height: 1.5;
+  }
+  .page { max-width: 780px; margin: 0 auto; padding: 24px 32px; }
+  h1 { font-size: 26px; margin: 0 0 2px; }
+  h2 { font-size: 17px; margin: 26px 0 8px; padding-bottom: 4px; border-bottom: 2px solid #4f46e5; }
+  h3 { font-size: 14px; margin: 16px 0 6px; }
+  p { margin: 6px 0; }
+  .sub { color: #6b7280; font-size: 12.5px; }
+  .tag { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 11px; font-weight: 700; margin-right: 6px; }
+  .tag.have { background: #d1fae5; color: #065f46; }
+  .tag.buy { background: #fee2e2; color: #991b1b; }
+  .tag.opt { background: #fef3c7; color: #92400e; }
+  .tag.warn { background: #e0e7ff; color: #3730a3; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+  th, td { text-align: left; padding: 6px 8px; border: 1px solid #e2e6ee; vertical-align: top; }
+  th { background: #eef0ff; font-size: 11.5px; text-transform: uppercase; letter-spacing: .03em; }
+  .qty { text-align: center; white-space: nowrap; }
+  tr.total td { background: #f9fafb; font-weight: 700; }
+  .note { background: #eef0ff; border-left: 4px solid #4f46e5; padding: 8px 12px; border-radius: 6px; margin: 10px 0; }
+  .warn-note { background: #fff7ed; border-left-color: #ea580c; }
+  .ok-note { background: #ecfdf5; border-left-color: #16a34a; }
+  code { background: #f3f4f6; border-radius: 4px; padding: 1px 5px; font-size: 12px; }
+  .pin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+  .pin { border: 1px solid #e2e6ee; border-radius: 8px; padding: 8px 10px; }
+  .pin b { color: #4f46e5; }
+  .pin .s { display: block; color: #6b7280; font-size: 11.5px; }
+  ol.steps { padding-left: 20px; }
+  ol.steps li { margin-bottom: 6px; }
+  .pagebreak { page-break-before: always; }
+  @media print { .page { max-width: none; padding: 0 10px; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>Desk Pet — Build Guide &amp; Parts List</h1>
+  <p class="sub">Smart interactive desk companion &middot; ESP32 2.8&Prime; touchscreen (CYD) &middot; v1 desk model (no wheels)</p>
+
+  <h2>1. The idea in one picture</h2>
+  <p>Your 2.8&Prime; ESP32 board is the <b>Cheap Yellow Display (CYD, ESP32-2432S028)</b>. The screen is mounted forward inside a 3D-printed shell so it becomes the pet&rsquo;s <b>face</b> (animated eyes / mascot). The <b>touchscreen</b> responds to taps and petting, the <b>speaker</b> sits behind a grille, and the <b>vibration motor</b> is glued to the inside of the shell so the whole body shivers when the pet is happy. USB-C powers it out of the back/bottom.</p>
+  <h3>What the pet does</h3>
+  <ul>
+    <li>Screen touch &rarr; reacts when tapped or &ldquo;petted&rdquo;</li>
+    <li>Sound sensor &rarr; reacts to claps and loud talk</li>
+    <li>Speaker (on-board amplifier) &rarr; pet sounds</li>
+    <li>Vibration motor &rarr; purr / shiver when you pet it or it gets excited</li>
+    <li>USB-C &rarr; power from PC or charger (no battery in v1)</li>
+  </ul>
+
+  <h2>2. What you already have</h2>
+  <table>
+    <tr><th>Item</th><th class="qty">Qty</th><th>Notes</th></tr>
+    <tr><td>ESP32 2.8&Prime; touchscreen board (CYD 2432S028)</td><td class="qty">1</td><td>Has on-board <b>SC8002B audio amp</b> + 2-pin speaker header on GPIO26, touchscreen (XPT2046), RGB LED, light sensor. Free GPIOs: 21, 22, 27, 35.</td></tr>
+    <tr><td>USB-C power/data cable</td><td class="qty">1</td><td>For flashing + power.</td></tr>
+    <tr><td>3D printer + filament</td><td class="qty">-</td><td>PETG/PLA+ for the shell.</td></tr>
+  </table>
+
+  <h2>3. Shopping list (verified &mdash; one store: NDE3D)</h2>
+  <p><span class="sub">All items below were verified in stock on the NDE3D site (prices incl. VAT). The INMP441 mic was removed &mdash; it won&rsquo;t fit the CYD&rsquo;s free pins &mdash; and replaced with the MAX4466 analog sound sensor, which is also stocked by NDE3D, so Make Electronics is no longer needed.</span></p>
+
+  <table>
+    <tr><th>Item</th><th class="qty">Qty</th><th>Price</th><th>Purpose</th></tr>
+
+    <tr><td><a href="https://nde3d.co.za/amplifiers-and-audio/1876-microphone-amplifier-module-max4466.html">MAX4466 mic amplifier module</a></td><td class="qty">1</td><td>R50.00</td><td>Clap / loud-voice detection. Analog out &rarr; GPIO35 (ADC). Replaces the INMP441.</td></tr>
+    <tr><td><a href="https://nde3d.co.za/amplifiers-and-audio/3735-18mm-round-voice-speaker.html">40 mm 8 &Omega; / 0.5 W speaker</a></td><td class="qty">1</td><td>R6.79</td><td>Pet sounds &mdash; plugs into the CYD&rsquo;s on-board speaker header (GPIO26 amp). No amp module needed.</td></tr>
+    <tr><td><a href="https://nde3d.co.za/motors/3481-mobile-phone-vibration-motor.html">Mobile-phone vibration motor</a></td><td class="qty">1</td><td>R10.00</td><td>Purr / shiver when petted or excited.</td></tr>
+    <tr><td><a href="https://nde3d.co.za/transistors/3043-npn-transistor-bc237bc547b-5-pack.html">BC337 NPN transistor (pack)</a></td><td class="qty">1</td><td>R10.00</td><td>Safely switches the vibration motor (GPIO can&rsquo;t drive it directly).</td></tr>
+    <tr><td><a href="https://nde3d.co.za/diodes/1117-1n4007-1000v-1a-general-purpose-diode-x5.html">1N4007 diode (pack of 5)</a></td><td class="qty">1</td><td>R8.00</td><td>Flyback protection across the motor.</td></tr>
+    <tr><td><a href="https://nde3d.co.za/resistors/503-532-resistor-thl-14w-1-pack-of-10.html">1/4 W 1 % resistor pack &mdash; select 1 k&Omega;</a></td><td class="qty">1</td><td>R5.00</td><td>Transistor base resistor.</td></tr>
+    <tr><td><a href="https://nde3d.co.za/resistors/503-532-resistor-thl-14w-1-pack-of-10.html">1/4 W 1 % resistor pack &mdash; select 10 k&Omega;</a></td><td class="qty">1</td><td>R5.00</td><td>Base pull-down to keep the motor off at boot.</td></tr>
+    <tr><td><a href="https://nde3d.co.za/general/2926-20mm-x-80mm-prototype-double-sided-copper-pcb.html">20 &times; 80 mm prototype PCB</a></td><td class="qty">1</td><td>R5.00</td><td>Motor driver + wired tidy-up.</td></tr>
+    <tr><td><a href="https://nde3d.co.za/wire/1694-cable-dupont-100mm-male-female-40-way.html">Dupont M&ndash;F 100 mm (40-way)</a></td><td class="qty">1</td><td>R28.00</td><td>Sensor/motor wiring.</td></tr>
+    <tr><td><a href="https://nde3d.co.za/wire/2004-cable-dupont-200mm-female-female-40-way.html">Dupont F&ndash;F 200 mm (40-way)</a></td><td class="qty">1</td><td>R31.00</td><td>Longer sensor runs.</td></tr>
+    <tr><td><a href="https://nde3d.co.za/bolts-nuts/3154-m5-x-10mm-button-head-cap-screw-stainless-steel-pack-of-10.html">M3 &times; 8 mm screws (pack of 10)</a></td><td class="qty">2</td><td>R6.00</td><td>Shell assembly.</td></tr>
+    <tr><td><a href="https://nde3d.co.za/bolts-nuts/2246-m3-brass-threaded-insert-2-3-or-5mm-pack-of-4.html">M3 brass heat-set inserts (pack of 4)</a></td><td class="qty">2</td><td>R20.00</td><td>Strong threads in the printed shell (select 3 mm).</td></tr>
+    <tr><td><a href="https://nde3d.co.za/consumables/1789-127pcs-assorted-heat-shrink-tubing.html">Heat-shrink assortment (127 pcs)</a></td><td class="qty">1</td><td>R34.00</td><td>Insulate joints.</td></tr>
+     <tr class="total"><td colspan="2">NDE3D basket total (approx., excl. delivery)</td><td>~R219</td><td>All items in stock. Delivery free over R2000.</td></tr>
+  </table>
+
+  <div class="note">
+    <b>Before ordering, verify your exact board:</b> if your CYD is the USB-C revision (CYD2USB), the speaker header is standard. Confirm the 2-pin speaker connector is present on the edge near GPIO26 before relying on the on-board amp. If absent, you&rsquo;ll need a tiny PAM8403/MAX98357 amp later.
+  </div>
+
+  <h2>4. Wiring plan</h2>
+  <div class="pin-grid">
+     <div class="pin"><b>Onboard touch</b><span class="s">XPT2046 touchscreen on the CYD</span><span class="s">Use <code>XPT2046_Touchscreen</code> in firmware; no external touch-sensor wiring or GPIO is required.</span></div>
+    <div class="pin"><b>Speaker</b><span class="s">2-pin header &rarr; CYD SPK header (GPIO26 + GND)</span><span class="s">No external amp needed</span></div>
+    <div class="pin"><b>Vibration motor (via transistor)</b><span class="s">Motor + &rarr; 3V3 &middot; Motor &minus; &rarr; transistor collector</span><span class="s">1N4007 across motor (striped end &rarr; 3V3)</span><span class="s">Base &rarr; 1 k&Omega; &rarr; GPIO27 (PWM) &middot; 10 k&Omega; base&ndash;GND</span><span class="s">Emitter &rarr; GND</span></div>
+    <div class="pin"><b>Sound sensor</b><span class="s">VCC &rarr; 3V3 &middot; GND &rarr; GND</span><span class="s">OUT &rarr; GPIO35 (ADC / analog)</span></div>
+  </div>
+
+  <div class="warn-note note">
+     <b>Pin budget (why it fits):</b> the CYD exposes GPIOs 21, 22, 27, 35 for add-ons. The touch is built into the display, motor = 27, sound = 35. The old INMP441 needed 3 pins (SCK/WS/SD) which would not fit; the analog sound sensor needs only 1.
+  </div>
+
+  <h2>5. Build steps</h2>
+  <ol class="steps">
+    <li><b>Flash/verify the CYD first:</b> Install Arduino core for ESP32, select &ldquo;ESP32 Dev Module&rdquo;, run one of the CYD example sketches (<code>TFT_eSPI</code> has a CYD user setup; <code>XPT2046_Touchscreen</code> for touch). Confirm screen + touch + USB-C work before anything else.</li>
+    <li><b>Motor driver circuit on protoboard:</b> solder transistor, 1 k&Omega; + 10 k&Omega; resistors, 1N4007, and the two pin headers per the diagram above. Test with a blink sketch on GPIO27 at low PWM &mdash; the motor should buzz and the board should stay alive (if the board resets, the motor is drawing too much; drop to a smaller/proper pancake-motor current).</li>
+     <li><b>Wire the sensors with Dupont leads:</b> sound sensor OUT to GPIO35. The touch input is the CYD&rsquo;s built-in XPT2046 touchscreen and needs no external wiring.</li>
+     <li><b>3D-print the shell:</b> base/back for the CYD + speaker grille + touchscreen opening + screw bosses. Install M3 brass inserts, mount the screen, seat the speaker behind its grille, and hot-glue the vibration motor to the inner shell wall or floor so the whole body shakes.</li>
+    <li><b>Firmware (v1 pet logic):</b>
+      <ul>
+         <li>Face/eyes on screen: <code>TFT_eSPI</code> + <code>XPT2046_Touchscreen</code></li>
+         <li>Clap/loud &rarr; sample GPIO35 ADC, trigger on a rising envelope threshold</li>
+        <li>Sounds &rarr; <code>ledcWriteTone</code> or DAC tones on GPIO26 (or .WAV via the amp)</li>
+        <li>Shiver &rarr; LEDC PWM burst on GPIO27 for ~300&ndash;600 ms when petted / happy</li>
+         <li>Mood state machine: idle &rarr; happy (touch) &rarr; surprised (touch or clap)</li>
+      </ul>
+    </li>
+    <li><b>Assemble &amp; route USB-C</b> out the back; fixate with the M3 + inserts.</li>
+  </ol>
+
+  <h2>6. Budget recap</h2>
+  <table>
+    <tr><th>Line</th><th>Amount</th><th>Notes</th></tr>
+     <tr><td>NDE3D order (remaining items, incl. VAT)</td><td>~R219</td><td>Excl. delivery. Everything ships from one store &mdash; no second supplier.</td></tr>
+     <tr class="total"><td>Total electronics (est.)</td><td>~R219</td><td>Incl. VAT, excl. delivery. The touch input is built into the CYD.</td></tr>
+  </table>
+
+  <div class="pagebreak"></div>
+  <h2>7. Roadmap (future versions &mdash; not v1)</h2>
+  <table>
+    <tr><th>Model</th><th>Add-on</th><th>Why it happens later</th></tr>
+    <tr><td>v2 &mdash; camera</td><td>Move to an <b>ESP32-S3</b> with OV2640 (e.g. XIAO ESP32S3 Sense or ESP32-S3-CAM)</td><td>The CYD has no camera interface and no spare pins. S3 adds PSRAM for vision models; enables person-following / face detection (e.g. ESP-WHO).</td></tr>
+    <tr><td>v3 &mdash; wheels</td><td>2&times; N20 gear motors + DRV8833 driver, Li-Po + TP4056 charger</td><td>Needs 4 more GPIOs + separate motor power; the S3 board swap in v2 makes room for it. Remove USB tether &rarr; battery.</td></tr>
+  </table>
+
+  <h2>8. Do NOT buy (for this version)</h2>
+  <ul>
+    <li>Raspberry Pi Pico / micro:bit &mdash; your CYD is the controller.</li>
+    <li>Battery / TP4056 / power switch &mdash; USB-C powers v1.</li>
+    <li>Separate touch sensor (TTP223 etc.) &mdash; the CYD touchscreen does this.</li>
+    <li>Audio amplifier module (PAM8403 / MAX98357) &mdash; the board has an on-board amp; only needed if you confirm your CYD lacks the speaker header.</li>
+    <li>PNP-power stage is optional; the standard NPN + flyback diode covers v1&rsquo;s small motor.</li>
+  </ul>
+
+  <p class="sub" style="margin-top:28px">Desk Pet v1 &middot; generated from project build plan.</p>
+</div>
+</body>
+</html>

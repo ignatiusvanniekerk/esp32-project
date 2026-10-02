@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desk Buddy — Face</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: radial-gradient(1200px 800px at 50% 30%, #4b46b3, #1f2430 70%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color: #eef0ff; overflow: hidden;
+  }
+  canvas { display: block; }
+  .hint { position: fixed; bottom: 18px; font-size: 13px; color: #c7c9ff; letter-spacing: .04em; }
+</style>
+</head>
+<body>
+<canvas id="face" width="520" height="520"></canvas>
+<div class="hint">click / hold to pet</div>
+<script>
+(function () {
+  var c = document.getElementById('face');
+  var ctx = c.getContext('2d');
+  var W = c.width, H = c.height, cx = W / 2, cy = H / 2;
+  var R = 165;
+  var mood = 'idle', moodT = 0;
+  var blinkT = 0, blinkLen = 0, nextBlink = 1500;
+  var px = 0, py = 0, time = 0, eb = 0;
+
+  function dist(x1, y1, x2, y2) { var dx = x1 - x2, dy = y1 - y2; return Math.sqrt(dx * dx + dy * dy); }
+
+  function setMood(m, d) { mood = m; moodT = d; }
+
+  function pet(e) {
+    var r = -0.99; if (c.getBoundingClientRect) {
+      var b = c.getBoundingClientRect();
+      r = Math.min(1.6, (dist(e.clientX, e.clientY, b.left + b.width / 2, b.top + b.height / 2)) / 90) * 0.2;
+    }
+    setMood(Math.random() < 0.85 ? 'happy' : 'surprised', 1100 + r * 3000);
+  }
+
+  c.addEventListener('pointerdown', function (e) { c.setPointerCapture(e.pointerId); pet(e); });
+  c.addEventListener('pointermove', function (e) {
+    var b = c.getBoundingClientRect();
+    px = ((e.clientX - b.left) / b.width - 0.5) * 2;
+    py = ((e.clientY - b.top) / b.height - 0.5) * 2;
+  });
+  c.addEventListener('pointerup', function () {
+    if (mood === 'surprised') setMood('happy', 700);
+  });
+  c.addEventListener('pointerleave', function () { px = 0; py = 0; });
+
+  function blinkTick(dt) {
+    blinkT -= dt;
+    if (blinkT <= 0) {
+      if (blinkLen > 0) { blinkLen = 0; blinkT = nextBlink; nextBlink = 1100 + Math.random() * 3800; }
+      else { blinkLen = 140; blinkT = blinkLen; }
+    }
+  }
+
+  function f(n) { return Math.max(-1, Math.min(1, n)); }
+
+  function round(x, y, r) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); }
+
+  function eye(x, y, k, sx, sy) {
+    var ew = 34 * k, eh = 46 * k;
+    var lx = sx * 12, ly = sy * 10;
+    var sr = 5 * k + 1;
+    ctx.fillStyle = '#2b2f3a';
+    round(x + lx, y - ly, ew * 0.95, eh);
+    ctx.save();
+    ctx.beginPath(); round(x + lx, y - ly, ew, eh); ctx.clip();
+    ctx.beginPath(); ctx.arc(x - eb, y + 34, 40, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = '#ffffff';
+    round(x + lx - 9, y - ly - 11, 9); round(x + lx + 10, y - ly + 9, 5);
+  }
+
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+    var bx = Math.sin(t * 0.0018) * 2, by = Math.cos(t * 0.0022) * 2;
+    var ex = f(px), ey = f(py);
+    var scale = 1 + Math.sin(t * 0.002) * 0.012;
+
+    if (moodT > 0) moodT -= 16;
+    if (moodT <= 0 && (mood === 'happy' || mood === 'surprised')) { mood = 'idle'; moodT = 0; }
+
+    ctx.save();
+    ctx.translate(cx, cy + 10);
+
+    ctx.fillStyle = 'rgba(0,0,0,0.28)';
+    ctx.beginPath(); ctx.ellipse(0, 150, 120, 26, 0, 0, Math.PI * 2); ctx.fill();
+
+    ctx.scale(scale, scale);
+
+    var tilt = f(px) * 3;
+    ctx.rotate(tilt * 0.001);
+
+    ctx.fillStyle = '#ffe8d0';
+    ctx.strokeStyle = 'rgba(180,140,90,0.25)';
+    ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.arc(bx, by, R, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.beginPath(); ctx.arc(bx - 46, by - 70, 40, 0, Math.PI * 2); ctx.fill();
+
+    var ear = 30;
+    ctx.fillStyle = '#ffe8d0';
+    ctx.beginPath(); ctx.arc(bx - R + 12, by - R + 26, ear, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(bx + R - 12, by - R + 26, ear, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#f6c8d4';
+    ctx.beginPath(); ctx.arc(bx - R + 12, by - R + 26, ear * 0.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(bx + R - 12, by - R + 26, ear * 0.5, 0, Math.PI * 2); ctx.fill();
+
+    var exx = bx + ex * 18, eyy = by + ey * 12;
+    var k = blinkLen > 0 ? 0.12 : 1;
+    eye(exx - 58, eyy - 14, k, ex, ey);
+    eye(exx + 58, eyy - 14, k, ex, ey);
+
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = '#c9a06a';
+    ctx.lineWidth = 5;
+    var bx1 = (ex - 0.2) * 12 - 8, by1 = (ey - 0.2) * 8;
+    ctx.beginPath();
+    ctx.moveTo(exx - 116 + bx1, eyy - 96 + by1);
+    ctx.lineTo(exx - 88 + bx1, eyy - 104 + by1);
+    ctx.moveTo(exx + 116 - bx1, eyy - 96 + by1);
+    ctx.lineTo(exx + 88 - bx1, eyy - 104 + by1);
+    ctx.stroke();
+
+    var blush = 0;
+    if (mood === 'happy') blush = 0.5 + Math.sin(t * 0.02) * 0.1;
+    else if (mood === 'idle') blush = 0.12;
+    if (blush > 0) {
+      ctx.fillStyle = 'rgba(255,120,140,' + blush + ')';
+      round(exx - 96, eyy + 34, 15); round(exx + 96, eyy + 34, 15);
+    }
+
+    ctx.strokeStyle = '#8a5a3b';
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    if (mood === 'happy') {
+      ctx.arc(exx - 40, eyy + 78, 34, Math.PI * 0.2, Math.PI * 0.8);
+    } else if (mood === 'surprised') {
+      ctx.arc(exx - 38, eyy + 78, 17, 0, Math.PI * 2);
+      ctx.fillStyle = '#8a5a3b'; ctx.fill();
+    } else {
+      ctx.moveTo(exx - 40, eyy + 72);
+      ctx.lineTo(exx + 40, eyy + 72);
+    }
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function loop(ts) {
+    var dt = Math.min(50, ts - (time || ts));
+    time = ts;
+    blinkTick(dt);
+    draw(ts);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
