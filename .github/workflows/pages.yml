@@ -28,10 +28,24 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Stage site
+        run: |
+          mkdir -p _site/assets
+          cp *.html _site/
+          cp -r assets/. _site/assets/
+          for d in sketches housing docs; do
+            [ -d "$d" ] && cp -r "$d" _site/
+          done
+          touch _site/.nojekyll
+          echo "--- staging ---"
+          ls -la _site
+          echo "--- size ---"
+          du -sh _site
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '_site'
 
       - name: Deploy to GitHub Pages
         id: deployment
